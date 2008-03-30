@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>JSSpec results</title>
+    <link rel="stylesheet" type="text/css" href="jsspec/JSSpec.css" />
+    <script type="text/javascript" src="jsspec/diff_match_patch.js"></script>
+    <script type="text/javascript" src="jsspec/JSSpec.js"></script>
+    <script type="text/javascript" src="../vendor/prototype.js"></script>
+    <script type="text/javascript" src="../active_element.js"></script>
+    <script type="text/javascript" src="specs.js"></script>
+    <style type="text/css">
+      .posts, .users {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="display:none;"><p>A</p><p>B</p></div>
+
+    <div class="posts">
+      <div class="post" id="post_1">
+        <span class="title">This is not the real title element as it lacks the field class</span>
+        <h2 class="field title real_title">Sabotage</h2>
+        <p class="field content">
+          I'm telling y'all it's sabotage!!
+        </p>
+      </div>
+    </div>
+
+    <div class="users">
+      <dl class="user" id="user_1">
+        <dt>Name</dt>
+        <dd class="data name">Testy McTest</dd>
+        <dt>E-mail</dt>
+        <dd class="data email"><a class="real_email" href="mailto:test@test.com">test@test.com</a></dd>
+      </dl>
+    </div>
+
+  </body>
+</html>
