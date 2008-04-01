@@ -178,19 +178,6 @@ ActiveElement.Base = new JS.Class({
 });
 
 
-Object.extend(ActiveElement.Base, {
-
-  attach: function(item){
-    
-  },
-
-  findAndAttach: function(){
-    
-  }
-
-});
-
-
 ActiveElement.Collection = new JS.Class({
 
   //Class methods/properties
