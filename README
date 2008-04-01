@@ -1,6 +1,15 @@
 WIP
 
-ActiveElement.spawn('post');
-var post = ActiveElement.posts.first()
-alert('First post is titled '+post.get('title'));
-post.set('title', 'IM IN UR TITLE');
+<div class="post">
+  <h3 class="title">Never gonna give you up</h3>
+  <p class="summary">
+    Never gonna let you down
+    Never gonna run around and desert you
+  </p>
+</div>
+
+ActiveElement.Base.spawn('post');
+var post = ActiveElement.post;
+alert('Title is '+post.get('title'));
+post.set('title', 'Never gonna make you cry');
+post.set('summary', 'Never gonna say goodbye');
