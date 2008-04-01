@@ -1,5 +1,5 @@
 /*
- *
+ * Throwaway
  */
 
 //Prototype Element extensions
