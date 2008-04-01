@@ -151,7 +151,7 @@ describe('Extensions to Prototype Element class', {
     Base: new JS.Class(ActiveElement.Base)
   };
 
-  describe('ActiveElement.Base class', {
+  describe('ActiveElement.Base class+subclasses', {
 
     'before each': function(){
       o.Foo = new JS.Class(o.Base, {extend:{getIdentifier:function(){ return 'foo'; }}});
@@ -213,6 +213,24 @@ describe('Extensions to Prototype Element class', {
       value_of(Donkey.getName()).should_be('donkey');
       value_of(Donkey.getIdentifier()).should_be('donkey');
       value_of(Donkey.getPluralName()).should_be('donkeys');
+    },
+
+    'spawn should create a subclass of the receiver with getName pre-defined to return the first argument': function(){
+      var Giraffe = o.Base.spawn('giraffe');
+      value_of(Giraffe.superclass).should_be(o.Base);
+      value_of(Giraffe.getName()).should_be('giraffe');
+      value_of(o.Base.subclasses.include(Giraffe)).should_be_true();
+    },
+
+    'spawn should take a second argument with properties that are added to the class': function(){
+      var Elephant = o.Base.spawn('elephant', {size:'XXL', extend:{color:'grey'}});
+      value_of(Elephant.prototype.size).should_be('XXL');
+      value_of(Elephant.color).should_be('grey');
+    },
+
+    'spawn should allow extend.getName from the second arg to override the auto-defined getName': function(){
+      var Cougar = o.Base.spawn('cougar', {extend:{getName:function(){ return 'puma'; }}});
+      value_of(Cougar.getName()).should_be('puma');
     }
 
   });
@@ -272,6 +290,160 @@ describe('Extensions to Prototype Element class', {
 })();
 
 
+
+(function(){
+
+
+  var o = {};
+
+
+  describe('User (isA ActiveElement.Base)', {
+
+    'before each': function(){
+      o.User = ActiveElement.Base.spawn('user', {
+        getFieldNameClass:function(){ return 'data'; }
+      });
+    },
+
+    'after each': function(){
+      var i = o.User.superclass.subclasses.indexOf(o.User);
+      o.User.superclass.subclasses.splice(i,1);
+      delete o.User;
+    },
+
+    'User.attach should by default attach the value passed to ActiveElement[User.getName()]': function(){
+      o.User.attach('foo');
+      value_of(ActiveElement.user).should_be('foo');
+    },
+    
+    'User.attach should use getIdentifier as key when attaching to ActiveElement': function(){
+      o.User.getIdentifier = function(){ return 'i cant stand it'; };
+      o.User.attach('i know you planned it');
+      value_of(ActiveElement['i cant stand it']).should_be('i know you planned it');
+    },
+
+    'ActiveElement.user should be defined automagically': function(){
+      o.User.find = function(){ return new this($('user_1')); };
+      o.User.findAndAttach();//fake domload event
+      value_of(!!ActiveElement.user).should_be_true();
+      value_of(ActiveElement.user.klass).should_be(o.User);
+    },
+
+    'User.findAndAttach should call attach by default': function(){
+      var user;
+      o.User.find = function(){ return new this($('user_1')); };
+      o.User.attach = function(u){ user = u; };
+      o.User.findAndAttach();
+      value_of(user.klass).should_be(o.User);
+    }
+
+  });
+
+})();
+
+
+(function(){
+
+  var o = {
+    Items: new JS.Class(ActiveElement.Collection)
+  };
+
+  describe('ActiveElement.Collection class', {
+
+    'before each': function(){
+      o.Posts = new JS.Class(o.Items, {extend:{getName:function(){ return 'post'; }}});
+      o.Morons = new JS.Class(o.Items, {extend:{getName:function(){ return 'moron'; }}});
+      o.Idiots = new JS.Class(o.Morons, {extend:{getName:function(){ return 'idiot'; }}});
+    },
+
+    'after each': function(){
+      o.Items.subclasses = [];
+    },
+  
+    'getIdentifier should use getName': function(){
+      value_of(o.Posts.getIdentifier()).should_be(o.Posts.getName());
+    },
+
+    'fetchBaseClass should fetchOrCreate an ActiveElement.Base class using getIdentifier': function(){
+      value_of(o.Posts.fetchBaseClass()).should_be(ActiveElement.Base.fetch(o.Posts.getIdentifier()));
+      o.Posts.getIdentifier = function(){ return 'posting'; };
+      value_of(o.Posts.fetchBaseClass()).should_be(ActiveElement.Base.fetch('posting'));
+    },
+
+    'should return all descendant subclasses with getDescendants': function(){
+      var descendants = ActiveElement.Collection.getDescendants();
+      [o.Items, o.Posts, o.Morons, o.Idiots].each(function(k){ value_of(descendants.include(k)).should_be_true(); });
+
+      var descendants = o.Items.getDescendants();
+      value_of(descendants).should_have(3, 'items');
+      [o.Posts, o.Morons, o.Idiots].each(function(k){ value_of(descendants.include(k)).should_be_true(); });
+
+      descendants = o.Morons.getDescendants();
+      [o.Idiots].each(function(k){ value_of(descendants.include(k)).should_be_true(); });
+    },
+
+    'fetch should return the first descendant which has the given identifier': function(){
+      value_of(o.Items.fetch('post')).should_be(o.Posts);
+      value_of(ActiveElement.Collection.fetch('post')).should_be(o.Posts);
+      value_of(o.Items.fetch('moron')).should_be(o.Morons);
+      value_of(o.Items.fetch('idiot')).should_be(o.Idiots);
+      value_of(o.Morons.fetch('idiot')).should_be(o.Idiots);
+    },
+
+    'fetch should return null if no descendant matches the identifier': function(){
+      value_of(ActiveElement.Collection.fetch('sdfsdfsdf')).should_be(null);
+      value_of(o.Posts.fetch('idiot')).should_be(null);//Idiots is not a descendant of Posts
+    },
+
+    'fetchOrCreate should return an existing class if found': function(){
+      value_of(o.Items.fetchOrCreate('post')).should_be(o.Posts);
+      value_of(ActiveElement.Collection.fetchOrCreate('moron')).should_be(o.Morons);
+    },
+
+    'fetchOrCreate should create a new class if none is found with existing identifier': function(){
+      var descendants = o.Items.getDescendants();
+      var Hamsters = o.Items.fetchOrCreate('hamster');
+      value_of(o.Items.getDescendants().length - descendants.length).should_be(1);
+      value_of(descendants.include(Hamsters)).should_be_false();
+      value_of(o.Items.getDescendants().include(Hamsters)).should_be_true();
+    },
+
+    'fetchOrCreate should use message receiver as superclass when creating a new class': function(){
+      var Monkeys = o.Idiots.fetchOrCreate('monkey');
+      value_of(Monkeys.superclass).should_be(o.Idiots);
+    },
+
+    'fetchOrCreate should set the getName method to return the name passed as parameter': function(){
+      var Donkeys = o.Morons.fetchOrCreate('donkey');
+      value_of(Donkeys.getName()).should_be('donkey');
+      value_of(Donkeys.getIdentifier()).should_be('donkey');
+      value_of(Donkeys.getPluralName()).should_be('donkeys');
+    },
+
+    'spawn should create a subclass of the receiver with getName pre-defined to return the first argument': function(){
+      var Giraffes = o.Idiots.spawn('giraffe');
+      value_of(Giraffes.superclass).should_be(o.Idiots);
+      value_of(Giraffes.getName()).should_be('giraffe');
+      value_of(o.Idiots.subclasses.include(Giraffes)).should_be_true();
+    },
+
+    'spawn should take a second argument with properties that are added to the class': function(){
+      var Elephants = o.Items.spawn('elephant', {size:'XXL', extend:{color:'grey'}});
+      value_of(Elephants.prototype.size).should_be('XXL');
+      value_of(Elephants.color).should_be('grey');
+    },
+
+    'spawn should allow extend.getName from the second arg to override the auto-defined getName': function(){
+      var Cougars = o.Items.spawn('cougar', {extend:{getName:function(){ return 'puma'; }}});
+      value_of(Cougars.getName()).should_be('puma');
+    }
+  
+  });
+
+})();
+
+
+
 (function(){
 
   var o = {};
@@ -279,12 +451,26 @@ describe('Extensions to Prototype Element class', {
   describe('ActiveElement.Collection', {
   
     'before each': function(){
-      o.posts = new ActiveElement.Collection($('posts'));
+      o.Posts = ActiveElement.Collection.spawn('post');
+      o.posts = new o.Posts($('posts'));
       o.posts.getName = function(){ return 'post'; };
     },
+    
+    'findElements should return an array of DOM elements matching the selector "."+getName()': function(){
+      value_of(o.posts.findElements().first()).should_be(o.posts.element.select('.post').first());
+    },
+    
+    'findItems should return an array of Base objects wrapping DOM elements returned by findElements': function(){
+      value_of(o.posts.findItems().first().isA(ActiveElement.Base)).should_be_true();
+    },
 
-    'should': function(){
-      
+    'items should be an array': function(){
+      value_of(Object.isArray(o.posts.items)).should_be_true();
+    },
+
+    'items should be automatically populated using findItems': function(){
+      value_of(o.posts.items.first().isA(ActiveElement.Base.fetch('post'))).should_be_true();
+      value_of(o.posts.items.first().element).should_be(o.posts.element.select('.post').first());
     }
 
   });
@@ -293,22 +479,34 @@ describe('Extensions to Prototype Element class', {
 
 
 
+(function(){
 
-User = new JS.Class(ActiveElement.Base, {
-  getName: function(){
-    return 'user';
-  }
-});
+  var o = {};
 
-User.find = function(){
-  return new this($('user_1'));
-};
+  describe('Users (isA ActiveElement.Collection)', {
+  
+    'before each': function(){
+      o.Users = ActiveElement.Collection.spawn('user');
+    },
 
-describe('User', {
+    'after each': function(){
+      var i = ActiveElement.Collection.subclasses.indexOf(o.User);
+      ActiveElement.Collection.subclasses.splice(i,1);
+    },
 
-  'ActiveElement.user should have been defined automagically': function(){
-    //value_of(!!ActiveElement.user).should_be_true();
-    //value_of(ActiveElement.user.constructor).should_be(User);
-  }
+    'Users.attach should put parameter in ActiveElement[getPluralName] by default': function(){
+      o.Users.attach('foo');
+      value_of(ActiveElement[o.Users.getPluralName()]).should_be('foo');
+    },
 
-});
+    'Users.findAndAttach should run attach with the results from find': function(){
+      var users;
+      o.Users.find = function(){ return 'never gonna run around and desert you'; };
+      o.Users.attach = function(u){ users = u; };
+      o.Users.findAndAttach();
+      value_of(users).should_be('never gonna run around and desert you');
+    }
+  
+  });
+
+})();

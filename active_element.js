@@ -37,7 +37,7 @@ ActiveElement.Base = new JS.Class({
   extend: {
 
     getName: function(){ return 'item'; },
-    getPluralName: function(){ return this.getName()+'s'; },
+    getPluralName: function(){ return ActiveElement.pluralize(this.getName()); },
 
     //The identifier is used when looking up classes with fetchOrCreate
     getIdentifier: function(){ return this.getName(); },
@@ -55,12 +55,21 @@ ActiveElement.Base = new JS.Class({
       return this.fetch(name) || this.spawn(name);
     },
 
-    spawn: function(name){
-      return new JS.Class(this, {
-        extend: {
-          getName: function(){ return name; }
-        }
-      });
+    spawn: function(name, props){
+      if (!props) { props = {}; }
+      if (!props.extend) { props.extend = {}; }
+      if (!props.extend.getName) { props.extend.getName = function(){ return name; }; }
+      return new JS.Class(this, props);
+    },
+
+    attach: function(something){
+      ActiveElement[this.getIdentifier()] = something;
+    },
+
+    findAndAttach: function(){
+      if (Object.isFunction(this.find)) {
+        this.attach(this.find());
+      }
     }
 
   },
@@ -184,7 +193,43 @@ ActiveElement.Collection = new JS.Class({
   extend: {
   
     getName: function(){ return 'item'; },
-    getPluralName: function(){ return ActiveElement.pluralize(this.getName()); }
+    getPluralName: function(){ return ActiveElement.pluralize(this.getName()); },
+    getIdentifier: function(){ return this.getName(); },
+
+    fetchBaseClass: function(){
+      return ActiveElement.Base.fetchOrCreate(this.getIdentifier());
+    },
+
+    //TODO: Put common methods into module. Maybe.
+
+    getDescendants: function(){
+      return this.subclasses.concat(this.subclasses.invoke('getDescendants').flatten());
+    },
+    
+    fetch: function(identifier){
+      return this.getDescendants().find(function(k){ return k.getIdentifier() == identifier; }) || null;
+    },
+  
+    fetchOrCreate: function(name){
+      return this.fetch(name) || this.spawn(name);
+    },
+
+    spawn: function(name, props){
+      if (!props) { props = {}; }
+      if (!props.extend) { props.extend = {}; }
+      if (!props.extend.getName) { props.extend.getName = function(){ return name; }; }
+      return new JS.Class(this, props);
+    },
+
+    attach: function(something){
+      ActiveElement[this.getPluralName()] = something;
+    },
+
+    findAndAttach: function(){
+      if (Object.isFunction(this.find)) {
+        this.attach(this.find());
+      }
+    }
 
   },
 
@@ -197,8 +242,13 @@ ActiveElement.Collection = new JS.Class({
   getName: function(){ return this.klass.getName(); },
   getPluralName: function(){ return this.klass.getPluralName(); },
 
+  findElements: function(){
+    return this.element.select('.'+this.getName());
+  },
+
   findItems: function(){
-    return [];
+    var baseClass = this.klass.fetchBaseClass();
+    return this.findElements().map(function(e){ return new baseClass(e); });
   }
 
 });
