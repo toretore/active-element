@@ -1,1 +1,6 @@
 WIP
+
+ActiveElement.spawn('post');
+var post = ActiveElement.posts.first()
+alert('First post is titled '+post.get('title'));
+post.set('title', 'IM IN UR TITLE');
