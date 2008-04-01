@@ -6,6 +6,14 @@ ActiveElement = {
     var camelized = str.dasherize().camelize();
     return camelized.slice(0,1).toUpperCase()+camelized.slice(1);
   },
+  
+  pluralize: function(str){
+    return str+'s';
+  },
+  
+  singularize: function(str){
+    return str.slice(0,-1);
+  },
 
   ElementExtensions: {
     getID: function(el, label){
@@ -24,15 +32,45 @@ ActiveElement = {
 Element.addMethods(ActiveElement.ElementExtensions);
 
 
-ActiveElement.Base = Class.create({
+ActiveElement.Base = new JS.Class({
+
+  extend: {
+
+    getName: function(){ return 'item'; },
+    getPluralName: function(){ return this.getName()+'s'; },
+
+    //The identifier is used when looking up classes with fetchOrCreate
+    getIdentifier: function(){ return this.getName(); },
+
+    //Recursively fetches subclasses of this class
+    getDescendants: function(){
+      return this.subclasses.concat(this.subclasses.invoke('getDescendants').flatten());
+    },
+    
+    fetch: function(identifier){
+      return this.getDescendants().find(function(k){ return k.getIdentifier() == identifier; }) || null;
+    },
+  
+    fetchOrCreate: function(name){
+      return this.fetch(name) || this.spawn(name);
+    },
+
+    spawn: function(name){
+      return new JS.Class(this, {
+        extend: {
+          getName: function(){ return name; }
+        }
+      });
+    }
+
+  },
 
   initialize: function(element){
-    this.element = element;
+    this.element = $(element);
   },
   
-  getName: function(){
-    return 'item';
-  },
+  getName: function(){ return this.klass.getName(); },
+  getPluralName: function(){ return this.klass.getPluralName(); },
   
   //Returns the name of the class used to denote a data field
   getFieldNameClass: function(){
@@ -140,4 +178,40 @@ ActiveElement.Base = Class.create({
 });
 
 
-ActiveElement.Collection = Class.create();
+Object.extend(ActiveElement.Base, {
+
+  attach: function(item){
+    
+  },
+
+  findAndAttach: function(){
+    
+  }
+
+});
+
+
+ActiveElement.Collection = new JS.Class({
+
+  //Class methods/properties
+  extend: {
+  
+    getName: function(){ return 'item'; },
+    getPluralName: function(){ return ActiveElement.pluralize(this.getName()); }
+
+  },
+
+
+  initialize: function(element){
+    this.element = $(element);
+    this.items = this.findItems();
+  },
+
+  getName: function(){ return this.klass.getName(); },
+  getPluralName: function(){ return this.klass.getPluralName(); },
+
+  findItems: function(){
+    return [];
+  }
+
+});
