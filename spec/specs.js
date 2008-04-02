@@ -104,8 +104,8 @@ describe('Extensions to Prototype Element class', {
       value_of(o.post.getElement('title')).should_be('oh yeah');
     },
 
-    'should use accessor method getTitle on get("title") if available': function(){
-      o.post.getTitle = function(){
+    'should use accessor method getTitleValue on get("title") if available': function(){
+      o.post.getTitleValue = function(){
         return "Humbaba's roar is a Flood, his mouth is Fire, and his breath is Death!";
       };
       value_of(o.post.get('title')).should_be("Humbaba's roar is a Flood, his mouth is Fire, and his breath is Death!");
@@ -118,9 +118,9 @@ describe('Extensions to Prototype Element class', {
       value_of(o.post.get('title')).should_be('Tear down the house and build a boat!');
     },
 
-    'should use accessor method setTitle on set("title") if available': function(){
+    'should use accessor method setTitleValue on set("title") if available': function(){
       var fauxTitle = 'not set';
-      o.post.setTitle = function(value){
+      o.post.setTitleValue = function(value){
         fauxTitle = value;
       };
       o.post.set('title', 'Abandon wealth and seek living beings!');
@@ -139,6 +139,17 @@ describe('Extensions to Prototype Element class', {
     'should return element ID using Element#getID with getID': function(){
       o.post.getName = function(){ return 'post'; };
       value_of(o.post.getID()).should_be('1');
+    },
+
+    'should run afterInitialize after initialisation': function(){
+      var hasRun = false;
+      var Post = new JS.Class(ActiveElement.Base, {
+        afterInitialize: function(){
+          hasRun = true;
+        }
+      });
+      new Post($('post_1'));
+      value_of(hasRun).should_be_true();
     }
 
   });
@@ -252,7 +263,7 @@ describe('Extensions to Prototype Element class', {
       o.user = new ActiveElement.Base(o.element);
       o.user.getFieldNameClass = function(){ return 'data'; };
       o.user.getEmailElement = function(){ return this.getElementFromSelector('email').down('a'); };
-      o.user.setEmail = function(value){
+      o.user.setEmailValue = function(value){
         this.getElement('email').update(value).writeAttribute('href', value);
       };
     },
@@ -278,7 +289,7 @@ describe('Extensions to Prototype Element class', {
       value_of(o.element.down('.real_email').innerHTML).should_be('crappy@crapmeisters.com');
     },
 
-    'should use setEmail which sets both href and innerHTML': function(){
+    'should use setEmailValue which sets both href and innerHTML': function(){
       o.user.set('email', 'shitty@shitfuckers.com');
       value_of(o.element.down('.real_email').innerHTML).should_be('shitty@shitfuckers.com');
       value_of(o.element.down('.real_email').readAttribute('href')).should_be('shitty@shitfuckers.com');
@@ -471,6 +482,13 @@ describe('Extensions to Prototype Element class', {
     'items should be automatically populated using findItems': function(){
       value_of(o.posts.items.first().isA(ActiveElement.Base.fetch('post'))).should_be_true();
       value_of(o.posts.items.first().element).should_be(o.posts.element.select('.post').first());
+    },
+
+    'should run afterInitialize after initialisation': function(){
+      var hasRun = false;
+      o.Posts.include({ afterInitialize: function(){ hasRun = true; } });
+      new o.Posts($('posts'));
+      value_of(hasRun).should_be_true();
     }
 
   });

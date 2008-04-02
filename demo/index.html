@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>ActiveElement demo</title>
+    <script type="text/javascript" src="../vendor/class.js"></script>
+    <script type="text/javascript" src="../vendor/prototype.js"></script>
+    <script type="text/javascript" src="../active_element.js"></script>
+    <script type="text/javascript" src="posts.js"></script>
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <div id="container">
+
+      <h1>ActiveElement</h1>
+
+      <div id="description">
+        <p>
+          Open your Firebug
+        </p>
+        <ul>
+          <li><a href="posts.js">posts.js</a></li>
+        </ul>
+      </div>
+  
+      <div id="first">
+      
+        <div class="items posts" id="posts">
+          
+          <h2 class="title">Posts</h2>
+
+          <p>
+            Try this in your Firebug console:
+          </p>
+
+          <pre>ActiveElement.posts.singIt();</pre>
+
+          <div class="item post" id="post_1">
+            <h3 class="field title"><a href="/posts/1">I can't stand it</a></h3>
+            <p class="field summary">
+              I know you planned it
+            </p>
+            <div class="rating">
+              <h4>Rate this post</h4>
+              <ul>
+                <li><a href="/posts/1/rate/1">1</a></li>
+                <li><a href="/posts/1/rate/2">2</a></li>
+                <li><a href="/posts/1/rate/3">3</a></li>
+                <li><a href="/posts/1/rate/4">4</a></li>
+                <li><a href="/posts/1/rate/5">5</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="item post" id="post_2">
+            <h3 class="field title"><a href="/posts/2">I'm gonna set it straight</a></h3>
+            <p class="field summary">
+              This Watergate
+            </p>
+            <div class="rating">
+              <h4>Rate this post</h4>
+              <ul>
+                <li><a href="/posts/2/rate/1">1</a></li>
+                <li><a href="/posts/2/rate/2">2</a></li>
+                <li><a href="/posts/2/rate/3">3</a></li>
+                <li><a href="/posts/2/rate/4">4</a></li>
+                <li><a href="/posts/2/rate/5">5</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="item post" id="post_3">
+            <h3 class="field title"><a href="/posts/3">I can't stand rockin when I'm in here</a></h3>
+            <p class="field summary">
+              Because your crystal ball ain't so crystal clear
+            </p>
+            <div class="rating">
+              <!-- This post has already been rated by the user -->
+              <h4>Average rating</h4>
+              <p class="average">4.6</p>
+            </div>
+          </div>
+
+          <div class="item post" id="post_4">
+            <h3 class="field title"><a href="/posts/4">So while you sit back and wonder why</a></h3>
+            <p class="field summary">
+              I've got this fuckin thorn in my side
+            </p>
+            <div class="rating">
+              <h4>Rate this post</h4>
+              <ul>
+                <li><a href="/posts/4/rate/1">1</a></li>
+                <li><a href="/posts/4/rate/2">2</a></li>
+                <li><a href="/posts/4/rate/3">3</a></li>
+                <li><a href="/posts/4/rate/4">4</a></li>
+                <li><a href="/posts/4/rate/5">5</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="item post" id="post_5">
+            <h3 class="field title"><a href="/posts/5">Oh my God, it's a mirage</a></h3>
+            <p class="field summary">
+              I'm telling y'all it's <em>sabotage</em>!!
+            </p>
+            <div class="rating">
+              <h4>Rate this post</h4>
+              <ul>
+                <li><a href="/posts/5/rate/1">1</a></li>
+                <li><a href="/posts/5/rate/2">2</a></li>
+                <li><a href="/posts/5/rate/3">3</a></li>
+                <li><a href="/posts/5/rate/4">4</a></li>
+                <li><a href="/posts/5/rate/5">5</a></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="second">
+        2
+      </div>
+
+    </div>
+
+  </body>
+</html>

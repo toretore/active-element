@@ -25,6 +25,11 @@ ActiveElement = {
         return id;
       }
     }
+  },
+
+  findAndAttachAllClasses: function(){
+    this.Collection.getDescendants().each(function(k){ k.findAndAttach(); });
+    this.Base.getDescendants().each(function(k){ k.findAndAttach(); });
   }
 
 };
@@ -76,6 +81,7 @@ ActiveElement.Base = new JS.Class({
 
   initialize: function(element){
     this.element = $(element);
+    Object.isFunction(this.afterInitialize) && this.afterInitialize();
   },
   
   getName: function(){ return this.klass.getName(); },
@@ -132,7 +138,7 @@ ActiveElement.Base = new JS.Class({
   //This is called by +get+
   //Example: get('title') will try to call getTitle
   getValueFromFunction: function(name){
-    var fnName = 'get'+ActiveElement.camelize(name);
+    var fnName = 'get'+ActiveElement.camelize(name)+'Value';
     return Object.isFunction(this[fnName]) && this[fnName](name);
   },
   
@@ -159,7 +165,7 @@ ActiveElement.Base = new JS.Class({
   //Returns false if setName doesn't exist. This is called by +set+
   //Example: set('title') will try to call setTitle(value)
   setValueWithFunction: function(name, value){
-    var fnName = 'set'+ActiveElement.camelize(name);
+    var fnName = 'set'+ActiveElement.camelize(name)+'Value';
     if (Object.isFunction(this[fnName])) {
       this[fnName](value);
       return true;
@@ -188,6 +194,8 @@ ActiveElement.Base = new JS.Class({
 
 
 ActiveElement.Collection = new JS.Class({
+
+  include: Enumerable,
 
   //Class methods/properties
   extend: {
@@ -224,6 +232,11 @@ ActiveElement.Collection = new JS.Class({
     attach: function(something){
       ActiveElement[this.getPluralName()] = something;
     },
+    
+    find: function(){
+      var el = $(this.getPluralName());
+      return el ? new this(el) : null;
+    },
 
     findAndAttach: function(){
       if (Object.isFunction(this.find)) {
@@ -237,6 +250,7 @@ ActiveElement.Collection = new JS.Class({
   initialize: function(element){
     this.element = $(element);
     this.items = this.findItems();
+    Object.isFunction(this.afterInitialize) && this.afterInitialize();
   },
 
   getName: function(){ return this.klass.getName(); },
@@ -249,6 +263,16 @@ ActiveElement.Collection = new JS.Class({
   findItems: function(){
     var baseClass = this.klass.fetchBaseClass();
     return this.findElements().map(function(e){ return new baseClass(e); });
+  },
+
+  _each: function(fn){
+    return this.items.each(fn);
   }
 
+});
+
+
+
+document.observe('dom:loaded', function(){
+  ActiveElement.findAndAttachAllClasses();
 });
