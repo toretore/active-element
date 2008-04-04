@@ -1,53 +1,42 @@
 
 
-ActiveElement = {
-
-  camelize: function(str){
-    var camelized = str.dasherize().camelize();
-    return camelized.slice(0,1).toUpperCase()+camelized.slice(1);
-  },
-  
-  pluralize: function(str){
-    return str+'s';
-  },
-  
-  singularize: function(str){
-    return str.slice(0,-1);
-  },
-
-  ElementExtensions: {
-    getID: function(el, label){
-      var id = el.readAttribute('id');
-      if (label){
-        var match = id.match(new RegExp(label+'_(.+)'));
-        return match ? match[1] : null;
-      } else {
-        return id;
-      }
-    }
-  },
-
-  findAndAttachAllClasses: function(){
-    this.Collection.getDescendants().each(function(k){ k.findAndAttach(); });
-    this.Base.getDescendants().each(function(k){ k.findAndAttach(); });
-  }
-
-};
-
-Element.addMethods(ActiveElement.ElementExtensions);
-
-
-ActiveElement.Base = new JS.Class({
+ActiveElement = new JS.Class({
 
   extend: {
+  
+    camelize: function(str){
+      var camelized = str.dasherize().camelize();
+      return camelized.slice(0,1).toUpperCase()+camelized.slice(1);
+    },
+    
+    pluralize: function(str){
+      return str+'s';
+    },
+    
+    singularize: function(str){
+      return str.slice(0,-1);
+    },
 
-    getName: function(){ return 'item'; },
+    ElementExtensions: {
+      getID: function(el, label){
+        var id = el.readAttribute('id');
+        if (label){
+          var match = id.match(new RegExp(label+'_(.+)'));
+          return match ? match[1] : null;
+        } else {
+          return id;
+        }
+      }
+    },
+
     getPluralName: function(){ return ActiveElement.pluralize(this.getName()); },
-
-    //The identifier is used when looking up classes with fetchOrCreate
     getIdentifier: function(){ return this.getName(); },
 
-    //Recursively fetches subclasses of this class
+    findAndAttachAllClasses: function(){
+      this.Collection.getDescendants().each(function(k){ k.findAndAttach(); });
+      this.Base.getDescendants().each(function(k){ k.findAndAttach(); });
+    },
+
     getDescendants: function(){
       return this.subclasses.concat(this.subclasses.invoke('getDescendants').flatten());
     },
@@ -67,10 +56,6 @@ ActiveElement.Base = new JS.Class({
       return new JS.Class(this, props);
     },
 
-    attach: function(something){
-      ActiveElement[this.getIdentifier()] = something;
-    },
-
     findAndAttach: function(){
       if (Object.isFunction(this.find)) {
         this.attach(this.find());
@@ -80,13 +65,12 @@ ActiveElement.Base = new JS.Class({
   },
 
   initialize: function(element){
-    this.element = $(element);
-    Object.isFunction(this.afterInitialize) && this.afterInitialize();
+    this.element = element;
   },
   
   getName: function(){ return this.klass.getName(); },
   getPluralName: function(){ return this.klass.getPluralName(); },
-  
+
   //Returns the name of the class used to denote a data field
   getFieldNameClass: function(){
     return 'field';
@@ -95,6 +79,7 @@ ActiveElement.Base = new JS.Class({
   //Returns an array of names of fields available in this element
   getFieldNames: function(){
     var fieldNameClass = this.getFieldNameClass();
+    if (!fieldNameClass) { return []; }//No fieldNameClass, no way to get fieldNames
     return this.element.select('.'+fieldNameClass).inject([], function(arr ,el){
       var match = el.readAttribute('class').match(new RegExp(fieldNameClass+' ([^ ]+)'));
       if (match) { arr.push(match[1]); }
@@ -105,7 +90,9 @@ ActiveElement.Base = new JS.Class({
   //Returns a CSS selector for +name+ that can be used with element.down() to return
   //the descendant element which has the field +name+
   getFieldSelector: function(name){
-    return '.'+this.getFieldNameClass()+'.'+name;
+    var fieldNameClass = this.getFieldNameClass();
+    fieldNameClass = fieldNameClass ? '.'+fieldNameClass : ''
+    return fieldNameClass+'.'+name;
   },
 
   //Returns the element for the field name +name+
@@ -184,8 +171,32 @@ ActiveElement.Base = new JS.Class({
   //element.update(value), but could be change to e.g. element.value = value
   insertValueInElement: function(element, value){
     element.update(value);
+  }
+
+});
+
+Element.addMethods(ActiveElement.ElementExtensions);
+
+
+
+
+ActiveElement.Base = new JS.Class(ActiveElement, {
+
+  extend: {
+
+    getName: function(){ return 'item'; },
+
+    attach: function(something){
+      ActiveElement[this.getIdentifier()] = something;
+    }
+
   },
 
+  initialize: function(){
+    this.callSuper();
+    Object.isFunction(this.afterInitialize) && this.afterInitialize();
+  },
+  
   getID: function(label){
     return this.element.getID(label || this.getName());
   }
@@ -193,7 +204,9 @@ ActiveElement.Base = new JS.Class({
 });
 
 
-ActiveElement.Collection = new JS.Class({
+
+
+ActiveElement.Collection = new JS.Class(ActiveElement, {
 
   include: Enumerable,
 
@@ -201,32 +214,9 @@ ActiveElement.Collection = new JS.Class({
   extend: {
   
     getName: function(){ return 'item'; },
-    getPluralName: function(){ return ActiveElement.pluralize(this.getName()); },
-    getIdentifier: function(){ return this.getName(); },
 
     fetchBaseClass: function(){
       return ActiveElement.Base.fetchOrCreate(this.getIdentifier());
-    },
-
-    //TODO: Put common methods into module. Maybe.
-
-    getDescendants: function(){
-      return this.subclasses.concat(this.subclasses.invoke('getDescendants').flatten());
-    },
-    
-    fetch: function(identifier){
-      return this.getDescendants().find(function(k){ return k.getIdentifier() == identifier; }) || null;
-    },
-  
-    fetchOrCreate: function(name){
-      return this.fetch(name) || this.spawn(name);
-    },
-
-    spawn: function(name, props){
-      if (!props) { props = {}; }
-      if (!props.extend) { props.extend = {}; }
-      if (!props.extend.getName) { props.extend.getName = function(){ return name; }; }
-      return new JS.Class(this, props);
     },
 
     attach: function(something){
@@ -236,25 +226,16 @@ ActiveElement.Collection = new JS.Class({
     find: function(){
       var el = $(this.getPluralName());
       return el ? new this(el) : null;
-    },
-
-    findAndAttach: function(){
-      if (Object.isFunction(this.find)) {
-        this.attach(this.find());
-      }
     }
 
   },
 
 
-  initialize: function(element){
-    this.element = $(element);
+  initialize: function(){
+    this.callSuper();
     this.items = this.findItems();
     Object.isFunction(this.afterInitialize) && this.afterInitialize();
   },
-
-  getName: function(){ return this.klass.getName(); },
-  getPluralName: function(){ return this.klass.getPluralName(); },
 
   findElements: function(){
     return this.element.select('.'+this.getName());
@@ -262,7 +243,11 @@ ActiveElement.Collection = new JS.Class({
 
   findItems: function(){
     var baseClass = this.klass.fetchBaseClass();
-    return this.findElements().map(function(e){ return new baseClass(e); });
+    return this.findElements().map(function(e){
+      var item = new baseClass(e);
+      item.collection = this;
+      return item;
+    }.bind(this));
   },
 
   _each: function(fn){
@@ -270,6 +255,14 @@ ActiveElement.Collection = new JS.Class({
   }
 
 });
+
+//Delegate some methods (that aren't in Enumerable) to the items array
+ActiveElement.Collection.include(
+  ['first', 'last'].inject({}, function(o,m){
+    o[m] = function(){ return this.items[m].apply(this.items, arguments); };
+    return o;
+  })
+);
 
 
 

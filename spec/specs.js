@@ -254,8 +254,6 @@ describe('Extensions to Prototype Element class', {
   var o = {};
 
 
-  //This is not really that useful. Just thought it should have a use case
-  //based on real HTML
   describe('ActiveElement.Base with customisations', {
   
     'before each': function(){
@@ -274,6 +272,23 @@ describe('Extensions to Prototype Element class', {
 
     'should use custom getFieldNameClass to fetch list of field names': function(){
       value_of(o.user.getFieldNames()).should_be(['name', 'email']);
+    },
+    
+    'getFieldSelector should not include fieldNameClass if blank': function(){
+      o.user.getFieldNameClass = function(){ return null; };
+      value_of(o.user.getFieldSelector('coffee')).should_be('.coffee');
+    },
+    
+    'should not add the fieldNameClass if its blank on get()': function(){
+      o.element.down('.data.name').removeClassName('data').addClassName('atad');
+      o.user.getFieldNameClass = function(){ return null; };
+      value_of(o.user.get('name')).should_be(o.element.down('.atad.name').innerHTML);
+      o.element.down('.atad.name').removeClassName('atad').addClassName('data');
+    },
+    
+    'getFieldNames should return an empty array when there is no fieldNameClass': function(){
+      o.user.getFieldNameClass = function(){ return null; };
+      value_of(o.user.getFieldNames()).should_be([]);
     },
 
     'should use getEmailElement to fetch the right element': function(){

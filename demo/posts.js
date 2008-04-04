@@ -34,7 +34,7 @@ var Post = ActiveElement.Base.spawn('post', {
     setTimeout(function(){
       this.element.down('.rating h4').update('Average rating');
       this.element.down('.rating ul').replace(
-        '<p class="average">'+(Math.random()*6).toString().slice(0,3)+'</p>'
+        '<p class="average">'+(Math.random()*5).toString().slice(0,3)+'</p>'
       );
       this.element.removeClassName('updating');
       console.log('Post "'+this.get('title')+'" was rated.');
@@ -59,10 +59,14 @@ var Post = ActiveElement.Base.spawn('post', {
 var Posts = ActiveElement.Collection.spawn('post', {
 
   afterInitialize: function(){
-    console.log(this.items.length+' posts were initialised');
+    console.log(this.size()+' posts were initialised');
+  },
+  
+  getFieldNameClass: function(){
+    return null;
   },
 
-  singIt: function(){
+  sabotage: function(){
     console.log(
       this.map(function(post){
         return [post.get('title'), post.get('summary').replace(/\s+/g, ' ').strip()];

@@ -132,3 +132,41 @@ h1 {
     padding: 0.25em;
     margin: 0;
   }
+
+.users {
+  list-style-type: none;
+}
+
+  .users li {
+    margin: 0.5em 0;
+  }
+
+    .users li a {
+      display: block;
+      text-decoration: none;
+      padding: 1em;
+      text-align: center;
+      background: #444;
+      color: #ddd;
+      border: 1px solid #555;
+      outline: 0;
+    }
+
+      .users li.moderator a {
+        border-color: #585;
+      }
+
+      .users li.admin a {
+        border-color: #855;
+      }
+
+      .users li.marked a {
+        border-color: #558;
+        background-color: #445;
+        color: #ddf;
+        font-weight: bold;
+      }
+
+      .users li a:focus, .users li a:hover, .users li a:active {
+        border-style: dashed;
+      }
