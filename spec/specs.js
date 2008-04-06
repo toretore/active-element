@@ -49,6 +49,22 @@ describe('Extensions to Prototype Element class', {
     el.writeAttribute('id', 'post_');
     value_of(el.getID('post')).should_be(null);
     el.writeAttribute('id', 'post_1');
+  },
+
+  'Element#setID should set full "id" attribute when given one parameter': function(){
+    var el = $('post_1');
+    var prevID = el.readAttribute('id');
+    el.setID('giraffe');
+    value_of(el.readAttribute('id')).should_be('giraffe');
+    el.writeAttribute('id', prevID);
+  },
+
+  'Element#setID should set "id" attribute to <label>_<id> when given two parameters': function(){
+    var el = $('post_1');
+    var prevID = el.readAttribute('id');
+    el.setID(3, 'giraffe');
+    value_of(el.readAttribute('id')).should_be('giraffe_3');
+    el.writeAttribute('id', prevID);
   }
 
 });
@@ -68,12 +84,38 @@ describe('Extensions to Prototype Element class', {
       o.post = new ActiveElement.Base(o.element);
     },
     
-    'should have a getFieldNameClass which returns the class name that identifies data fields': function(){
-      value_of(o.post.getFieldNameClass()).should_be('field')
+    'should have a getAttributeNameClass which returns the class name that identifies data fields': function(){
+      value_of(o.post.getAttributeNameClass()).should_be('field')
     },
 
-    'should provide a getFieldNames method which returns the available data fields in the element': function(){
-      value_of(o.post.getFieldNames()).should_be(['title', 'content']);
+    'should provide a getAttributeNames method which returns the available data fields in the element': function(){
+      value_of(o.post.getAttributeNames()).should_be(['title', 'content']);
+    },
+    
+    'should provide a getAttributes method which returns an object with the elements attribute names and values': function(){
+      value_of(o.post.getAttributes()).should_be({title:o.post.get('title'), content:o.post.get('content')});
+    },
+    
+    'should return only attributes with the keys provided when getAttributes is given parameters': function(){
+      value_of(o.post.getAttributes('title')).should_be({title:o.post.get('title')});
+    },
+    
+    'should provide a getScopedAttributes method which works like getAttributes but wraps keys in <getName>[<key>]': function(){
+      o.post.getName = function(){ return 'post'; };
+      value_of(o.post.getScopedAttributes()).should_be({'post[title]':o.post.get('title'), 'post[content]':o.post.get('content')});
+    },
+    
+    'should use the first parameter as scope with getScopedAttributes': function(){
+      value_of(o.post.getScopedAttributes('article')).should_be({'article[title]':o.post.get('title'), 'article[content]':o.post.get('content')});
+    },
+    
+    'should return only attributes with the keys provided when getScopedAttributes is given an array': function(){
+      o.post.getName = function(){ return 'post'; };
+      value_of(o.post.getScopedAttributes(['title'])).should_be({'post[title]':o.post.get('title')});
+    },
+    
+    'should use the first parameter as scope and the second as attribute names with getScopedAttributes': function(){
+      value_of(o.post.getScopedAttributes('article', ['title'])).should_be({'article[title]':o.post.get('title')});
     },
 
     'should provide an "element" property to access the encapsulated DOM element': function(){
@@ -139,6 +181,13 @@ describe('Extensions to Prototype Element class', {
     'should return element ID using Element#getID with getID': function(){
       o.post.getName = function(){ return 'post'; };
       value_of(o.post.getID()).should_be('1');
+    },
+    
+    'should set the element ID using Element#setID with setID': function(){
+      o.post.getName = function(){ return 'post'; };
+      o.post.setID(666);
+      value_of(o.post.getID()).should_be('666');
+      value_of(o.element.readAttribute('id')).should_be('post_666');
     },
 
     'should run afterInitialize after initialisation': function(){
@@ -259,36 +308,36 @@ describe('Extensions to Prototype Element class', {
     'before each': function(){
       o.element = $('user_1');
       o.user = new ActiveElement.Base(o.element);
-      o.user.getFieldNameClass = function(){ return 'data'; };
+      o.user.getAttributeNameClass = function(){ return 'data'; };
       o.user.getEmailElement = function(){ return this.getElementFromSelector('email').down('a'); };
       o.user.setEmailValue = function(value){
         this.getElement('email').update(value).writeAttribute('href', value);
       };
     },
 
-    'should use custom getFieldNameClass to look up elements': function(){
+    'should use custom getAttributeNameClass to look up elements': function(){
       value_of(o.user.getElement('name')).should_be(o.element.down('.data.name'));
     },
 
-    'should use custom getFieldNameClass to fetch list of field names': function(){
-      value_of(o.user.getFieldNames()).should_be(['name', 'email']);
+    'should use custom getAttributeNameClass to fetch list of field names': function(){
+      value_of(o.user.getAttributeNames()).should_be(['name', 'email']);
     },
     
-    'getFieldSelector should not include fieldNameClass if blank': function(){
-      o.user.getFieldNameClass = function(){ return null; };
+    'getFieldSelector should not include attributeNameClass if blank': function(){
+      o.user.getAttributeNameClass = function(){ return null; };
       value_of(o.user.getFieldSelector('coffee')).should_be('.coffee');
     },
     
-    'should not add the fieldNameClass if its blank on get()': function(){
+    'should not add the attributeNameClass if its blank on get()': function(){
       o.element.down('.data.name').removeClassName('data').addClassName('atad');
-      o.user.getFieldNameClass = function(){ return null; };
+      o.user.getAttributeNameClass = function(){ return null; };
       value_of(o.user.get('name')).should_be(o.element.down('.atad.name').innerHTML);
       o.element.down('.atad.name').removeClassName('atad').addClassName('data');
     },
     
-    'getFieldNames should return an empty array when there is no fieldNameClass': function(){
-      o.user.getFieldNameClass = function(){ return null; };
-      value_of(o.user.getFieldNames()).should_be([]);
+    'getAttributeNames should return an empty array when there is no attributeNameClass': function(){
+      o.user.getAttributeNameClass = function(){ return null; };
+      value_of(o.user.getAttributeNames()).should_be([]);
     },
 
     'should use getEmailElement to fetch the right element': function(){
@@ -327,7 +376,7 @@ describe('Extensions to Prototype Element class', {
 
     'before each': function(){
       o.User = ActiveElement.Base.spawn('user', {
-        getFieldNameClass:function(){ return 'data'; }
+        getAttributeNameClass:function(){ return 'data'; }
       });
     },
 
@@ -349,7 +398,7 @@ describe('Extensions to Prototype Element class', {
     },
 
     'ActiveElement.user should be defined automagically': function(){
-      o.User.find = function(){ return new this($('user_1')); };
+      o.User.findInDocument = function(){ return new this($('user_1')); };
       o.User.findAndAttach();//fake domload event
       value_of(!!ActiveElement.user).should_be_true();
       value_of(ActiveElement.user.klass).should_be(o.User);
@@ -357,7 +406,7 @@ describe('Extensions to Prototype Element class', {
 
     'User.findAndAttach should call attach by default': function(){
       var user;
-      o.User.find = function(){ return new this($('user_1')); };
+      o.User.findInDocument = function(){ return new this($('user_1')); };
       o.User.attach = function(u){ user = u; };
       o.User.findAndAttach();
       value_of(user.klass).should_be(o.User);
@@ -532,12 +581,87 @@ describe('Extensions to Prototype Element class', {
       value_of(ActiveElement[o.Users.getPluralName()]).should_be('foo');
     },
 
-    'Users.findAndAttach should run attach with the results from find': function(){
+    'Users.findAndAttach should run attach with the results from findInDocument': function(){
       var users;
-      o.Users.find = function(){ return 'never gonna run around and desert you'; };
+      o.Users.findInDocument = function(){ return 'never gonna run around and desert you'; };
       o.Users.attach = function(u){ users = u; };
       o.Users.findAndAttach();
       value_of(users).should_be('never gonna run around and desert you');
+    }
+  
+  });
+
+})();
+
+
+(function(){
+
+  var o = {
+    CommentForm: ActiveElement.Form.spawn('comment')
+  };
+
+  describe('ActiveElement.Form', {
+  
+    'before each': function(){
+      o.element = $('new_comment');
+      o.form = new o.CommentForm(o.element);
+      o.origClassAttribute = o.element.readAttribute('class');
+      o.origIdAttribute = o.element.readAttribute('id');
+    },
+    
+    'after each': function(){
+      o.element.writeAttribute('class', o.origClassAttribute);
+      o.element.writeAttribute('id', o.origIdAttribute);
+    },
+
+    'should have an isNewRecord method that returns true if the element has the class "new_<getName>"': function(){
+      value_of(o.form.isNewRecord()).should_be_true();
+    },
+
+    'should have an isNewRecord method that returns false it the element does not have the class "new_<getName>"': function(){
+      o.element.writeAttribute('class', 'edit_comment');
+      value_of(o.form.isNewRecord()).should_be_false();
+    },
+
+    'should have a getID method that returns null if isNewRecord': function(){
+      value_of(o.form.getID()).should_be(null);
+    },
+
+    'should have a getID method that returns the ID extracted from edit_<getName>_<id> if !isNewRecord': function(){
+      o.element.writeAttribute('class', 'edit_comment');
+      o.element.writeAttribute('id', 'edit_comment_45');
+      value_of(o.form.getID()).should_be('45');
+    },
+
+    'should have a setID method that sets the "id" attribute to "edit_<getName>_<id>" if !isNewRecord': function(){
+      o.element.writeAttribute('class', 'edit_comment');
+      o.element.writeAttribute('id', 'edit_comment_45');
+      o.form.setID('123');
+      value_of(o.form.getID()).should_be('123');
+      value_of(o.element.readAttribute('id')).should_be('edit_comment_123');
+    },
+    
+    'should change class name to "edit_<getName>" on setID if isNewRecord': function(){
+      o.form.setID('123');
+      value_of(o.element.readAttribute('class')).should_be('edit_comment');
+      value_of(o.form.isNewRecord()).should_be_false();
+    },
+
+    'should have a getElement method that returns the element with the id "<getName>_<name>"': function(){
+      value_of(o.form.getElement('name')).should_be(o.element.down('#comment_name'));
+    },
+
+    'should extract the value of an element using the elements value property': function(){
+      value_of(o.form.get('name')).should_be(o.element.down('#comment_name').value);
+    },
+
+    'should set the value of an element using the elements value property': function(){
+      o.form.set('name', 'Utanapishtim, the Faraway');
+      value_of(o.element.down('#comment_name').value).should_be('Utanapishtim, the Faraway');
+    },
+
+    'should generate a resource index URL with generateURL when isNewRecord': function(){
+      
     }
   
   });

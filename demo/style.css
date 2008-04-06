@@ -30,10 +30,17 @@ h1 {
   color: #030;
   padding: 1em;
   margin-bottom: 2em;
+  font-size: 90%;
 }
 
   #description ul {
     list-style-type: none;
+    margin: 1em 0;
+  }
+
+  #description code {
+    background: #9c9;
+    padding: 0 0.5em;
   }
 
 #first {
@@ -169,4 +176,8 @@ h1 {
 
       .users li a:focus, .users li a:hover, .users li a:active {
         border-style: dashed;
+      }
+
+      .users li a .paren {
+        display: none;
       }

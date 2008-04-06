@@ -1,4 +1,4 @@
-var Post = ActiveElement.Base.spawn('post', {
+Demo.Post = ActiveElement.Base.spawn('post', {
 
   afterInitialize: function(){
     this.hijackRating();
@@ -56,13 +56,19 @@ var Post = ActiveElement.Base.spawn('post', {
 
 });
 
-var Posts = ActiveElement.Collection.spawn('post', {
+Demo.Posts = ActiveElement.Collection.spawn('post', {
+
+  extend: {
+    attach: function(posts){
+      Demo.posts = posts;
+    }
+  },
 
   afterInitialize: function(){
     console.log(this.size()+' posts were initialised');
   },
   
-  getFieldNameClass: function(){
+  getAttributeNameClass: function(){
     return null;
   },
 

@@ -1,4 +1,4 @@
-ActiveElement.Base.spawn('user', {
+Demo.User = ActiveElement.Base.spawn('user', {
 
   afterInitialize: function(){
     console.log('User '+this.getID()+' initialised: '+this.get('name'));
@@ -52,7 +52,13 @@ ActiveElement.Base.spawn('user', {
 
 });
 
-ActiveElement.Collection.spawn('user', {
+Demo.Users = ActiveElement.Collection.spawn('user', {
+
+  extend: {
+    attach: function(users){
+      Demo.users = users;
+    }
+  },
 
   afterInitialize: function(){
     console.log(this.size()+' users initialised');

@@ -21,14 +21,19 @@ ActiveElement = new JS.Class({
       getID: function(el, label){
         var id = el.readAttribute('id');
         if (label){
-          var match = id.match(new RegExp(label+'_(.+)'));
+          var match = id.match(new RegExp('^'+label+'_(.+)'));
           return match ? match[1] : null;
         } else {
           return id;
         }
+      },
+      setID: function(el, id, label){
+        el.writeAttribute('id', label ? label+'_'+id : id);
       }
     },
 
+    //getName shouldn't work when ActiveElement (or an instance of it) is used directly
+    getName: function(){ throw('getName not implemented for this class/object'); },
     getPluralName: function(){ return ActiveElement.pluralize(this.getName()); },
     getIdentifier: function(){ return this.getName(); },
 
@@ -57,42 +62,79 @@ ActiveElement = new JS.Class({
     },
 
     findAndAttach: function(){
-      if (Object.isFunction(this.find)) {
-        this.attach(this.find());
+      if (Object.isFunction(this.findInDocument)) {
+        this.attach(this.findInDocument());
       }
     }
 
   },
 
   initialize: function(element){
-    this.element = element;
+    this.element = $(element);
   },
   
   getName: function(){ return this.klass.getName(); },
   getPluralName: function(){ return this.klass.getPluralName(); },
 
   //Returns the name of the class used to denote a data field
-  getFieldNameClass: function(){
+  getAttributeNameClass: function(){
     return 'field';
   },
   
   //Returns an array of names of fields available in this element
-  getFieldNames: function(){
-    var fieldNameClass = this.getFieldNameClass();
-    if (!fieldNameClass) { return []; }//No fieldNameClass, no way to get fieldNames
-    return this.element.select('.'+fieldNameClass).inject([], function(arr ,el){
-      var match = el.readAttribute('class').match(new RegExp(fieldNameClass+' ([^ ]+)'));
+  //Field name == the class name directly after attributeNameClass
+  getAttributeNames: function(){
+    var attributeNameClass = this.getAttributeNameClass();
+    if (!attributeNameClass) { return []; }//No attributeNameClass, no way to get attributeNames
+
+    return this.element.select('.'+attributeNameClass).inject([], function(arr ,el){
+      var match = el.readAttribute('class').match(new RegExp(attributeNameClass+' ([^ ]+)'));
       if (match) { arr.push(match[1]); }
       return arr;
+    });
+  },
+  
+  //Returns an object consisting of attributes names and values,
+  //i.e. {title:'First post', content:'Please read my blag'}
+  getAttributes: function(){
+    var attributes = this.getAttributeNames(),
+        args = $A(arguments);
+
+    if (args.length) {
+      attributes = attributes.select(function(k){
+        return args.include(k);
+      });
+    }
+    
+    return attributes.inject({}, function(o,p){
+      o[p] = this.get(p);
+      return o;
+    }, this);
+  },
+  
+  //Returns the same as getAttributes, but wraps the key names as "<getName>[<key>]",
+  //i.e. "user[name]" = "Bobby-Bob Bobson"
+  //Takes 1 or 2 arguments
+  //When given a single argument, it can be either a string used as a scope name, or an
+  //array with key names that are passed to getAttributes as parameters
+  //When given 2 arguments, the first is the string and the second is the array
+  getScopedAttributes: function(){
+    var args = $A(arguments);
+    var name = Object.isString(args[0]) ? args[0] : this.getName();
+    var attributes = this.getAttributes.apply(this, args.find(function(e){ return Object.isArray(e); }) || []);
+
+    return Object.keys(attributes).inject({}, function(o,p){
+      o[name+'['+p+']'] = attributes[p];
+      return o;
     });
   },
 
   //Returns a CSS selector for +name+ that can be used with element.down() to return
   //the descendant element which has the field +name+
   getFieldSelector: function(name){
-    var fieldNameClass = this.getFieldNameClass();
-    fieldNameClass = fieldNameClass ? '.'+fieldNameClass : ''
-    return fieldNameClass+'.'+name;
+    var attributeNameClass = this.getAttributeNameClass();
+    attributeNameClass = attributeNameClass ? '.'+attributeNameClass : ''
+    return attributeNameClass+'.'+name;
   },
 
   //Returns the element for the field name +name+
@@ -171,6 +213,10 @@ ActiveElement = new JS.Class({
   //element.update(value), but could be change to e.g. element.value = value
   insertValueInElement: function(element, value){
     element.update(value);
+  },
+
+  remove: function(){
+    this.element.remove();
   }
 
 });
@@ -178,6 +224,11 @@ ActiveElement = new JS.Class({
 Element.addMethods(ActiveElement.ElementExtensions);
 
 
+
+
+/****
+ * Base
+ ****************/
 
 
 ActiveElement.Base = new JS.Class(ActiveElement, {
@@ -188,6 +239,20 @@ ActiveElement.Base = new JS.Class(ActiveElement, {
 
     attach: function(something){
       ActiveElement[this.getIdentifier()] = something;
+    },
+
+    find: function(id){
+      var el = $(this.getName()+'_'+id);
+      return el ? new this(el) : null;
+    },
+
+    //This will probably cause more problems than it solves
+    findBy: function(property, value){
+      var el = $$('.'+this.getPluralName()+' .'+this.getName()).detect(function(e){
+        var f = e.down('.'+property);
+        return f && f.innerHTML == value;
+      });
+      return el && new this(el);
     }
 
   },
@@ -199,11 +264,69 @@ ActiveElement.Base = new JS.Class(ActiveElement, {
   
   getID: function(label){
     return this.element.getID(label || this.getName());
+  },
+
+  setID: function(id, label){
+    this.element.setID(id, label || this.getName());
+    return this.getID(label);
+  },
+  
+  //So you can do get/set('id')
+  getIdValue: function(){ return this.getID(); },
+  setIdValue: function(id){ this.setID(id); },
+  
+  toParam: function(){
+    return this.getID();
+  },
+
+  //Will rewrite itself to use the available method
+  generateURL: function(){
+    this.generateURL = window.Routes ? this.generateURLFromRoutes : this.generateURLFromNothing;
+    return this.generateURL.apply(this, arguments);
+  },
+
+  //Will use Routes [http://tore.darell.no/pages/javascript_routes]
+  //to create a URL for this element
+  generateURLFromRoutes: function(){
+    var params = arguments[0] || {};
+    var options = arguments[1] || {};
+    if (typeof params.id === 'undefined') { params.id = this.toParam(); }
+    return Routes[this.name()].call(Routes, params, options);
+  },
+
+  //Will create a RESTful URL based on the plural name of this
+  //element and its ID (or toParam)
+  generateURLFromNothing: function(){
+    return '/'+this.getPluralName()+'/'+this.toParam();
+  },
+
+  update: function(){
+    var url, options;
+    if (Object.isString(arguments[0])) {
+      url = arguments[0];
+      options = arguments[1] || {};
+    } else {
+      url = this.generateURL();
+      options = arguments[0] || {};
+    }
+
+    options = Object.extend({
+      method: 'put',
+      parameters: this.getScopedAttributes()
+    }, options);
+
+    return new Ajax.Request(url, options);
   }
 
 });
 
 
+
+
+
+/*****
+ * Collection
+ *****************/
 
 
 ActiveElement.Collection = new JS.Class(ActiveElement, {
@@ -223,7 +346,7 @@ ActiveElement.Collection = new JS.Class(ActiveElement, {
       ActiveElement[this.getPluralName()] = something;
     },
     
-    find: function(){
+    findInDocument: function(){
       var el = $(this.getPluralName());
       return el ? new this(el) : null;
     }
@@ -249,6 +372,18 @@ ActiveElement.Collection = new JS.Class(ActiveElement, {
       return item;
     }.bind(this));
   },
+  
+  findBy: function(property, value){
+    return this.detect(function(item){
+      return item.get(property) == value;
+    });
+  },
+  
+  find: function(){
+    var args = $A(arguments);
+    args.unshift('id');
+    return this.findBy.apply(this, args);
+  },
 
   _each: function(fn){
     return this.items.each(fn);
@@ -263,6 +398,45 @@ ActiveElement.Collection.include(
     return o;
   })
 );
+
+
+
+/****
+ * Form
+ **************/
+
+
+ActiveElement.Form = new JS.Class(ActiveElement.Base, {
+
+  isNewRecord: function(){
+    return this.element.hasClassName('new_'+this.getName());
+  },
+
+  getID: function(){
+    return this.element.getID('edit_'+this.getName());
+  },
+
+  setID: function(id){
+    this.element.setID(id, 'edit_'+this.getName());
+    if (this.isNewRecord()){
+      this.element.removeClassName('new_'+this.getName());
+      this.element.addClassName('edit_'+this.getName());
+    }
+  },
+
+  getFieldSelector: function(name){
+    return '#'+this.getName()+'_'+name;
+  },
+
+  extractValueFromElement: function(element){
+    return element.value;
+  },
+
+  insertValueInElement: function(element, value){
+    element.value = value;
+  }
+
+});
 
 
 

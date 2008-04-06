@@ -5,6 +5,7 @@
     <script type="text/javascript" src="../vendor/class.js"></script>
     <script type="text/javascript" src="../vendor/prototype.js"></script>
     <script type="text/javascript" src="../active_element.js"></script>
+    <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="posts.js"></script>
     <script type="text/javascript" src="users.js"></script>
     <link href="style.css" rel="stylesheet" />
@@ -17,12 +18,17 @@
 
       <div id="description">
         <p>
-          Open your Firebug to see log messages and mess around with things.
+          This is a demo page for ActiveElement. It contains a few elements that have been wrapped in JavaScript
+          objects. A global object, <code>Demo</code> was created to contain objects that are specific to this
+          page. Have a look at these files to see how ActiveElement is used in practice:
         </p>
         <ul>
-          <li>Posts: <a href="posts.js">posts.js</a></li>
-          <li>Users: <a href="users.js">users.js</a></li>
+          <li>Posts: <a href="posts.js">posts.js</a> - Object <code>Demo.posts</code></li>
+          <li>Users: <a href="users.js">users.js</a> - Object <code>Demo.users</code></li>
         </ul>
+        <p>
+          Open your Firebug to see log messages and mess around with things.
+        </p>
       </div>
   
       <div id="first">
@@ -35,10 +41,10 @@
             Try this in your Firebug console:
           </p>
 
-          <pre>ActiveElement.posts.first().get('title');
-ActiveElement.posts.first().set('link', 'http://www.google.com');
-ActiveElement.posts.first().rate(3.4);
-ActiveElement.posts.sabotage();</pre>
+          <pre>Demo.posts.first().get('title');
+Demo.posts.first().set('link', 'http://www.google.com');
+Demo.posts.first().rate(3.4);
+Demo.posts.sabotage();</pre>
 
           <div class="item post" id="post_1">
             <h3 class="field title"><a href="/posts/1">I can't stand it</a></h3>
@@ -132,45 +138,50 @@ ActiveElement.posts.sabotage();</pre>
           Try:
         </p>
 
-        <pre>ActiveElement.users.first().get('firstname'); // "Robert"
-ActiveElement.users.first().get('name'); // "Robert Robertson"
-ActiveElement.users.first().set('name', 'Bobby Bobson');
-ActiveElement.users.first().get('lastname'); // "Bobson"
-ActiveElement.users.first().isAdmin(); // false
-ActiveElement.users.first().setAdmin(true);
+        <pre>Demo.users.first().get('firstname'); // "Robert"
+Demo.users.first().get('name'); // "Robert Robertson"
+Demo.users.first().set('name', 'Bobby Bobson');
+Demo.users.first().get('lastname'); // "Bobson"
+Demo.users.first().isAdmin(); // false
+Demo.users.first().setAdmin(true);
 //Click some users, then
-ActiveElement.users.getMarked().invoke('get', 'name')
-ActiveElement.users.getMarked().invoke('setMarked', false)</pre>
+Demo.users.getMarked().invoke('get', 'name');
+Demo.users.getMarked().invoke('setMarked', false);</pre>
 
         <ul class="users" id="users">
           <li class="user" id="user_1">
             <a href="mailto:robert@robertson.com" class="field email">
               <span class="field firstname">Robert</span>
               <span class="field lastname">Robertson</span>
+              (<span class="field username">robert</span>)
             </a>
           </li>
           <li class="user admin" id="user_2">
             <a href="mailto:smoky@hotmail.com" class="field email">
               <span class="field firstname">Smoky</span>
               <span class="field lastname">McPot</span>
+              (<span class="field username">smokie</span>)
             </a>
           </li>
           <li class="user" id="user_3">
             <a href="mailto:test@test.com" class="field email">
               <span class="field firstname">Testy</span>
               <span class="field lastname">McTest</span>
+              (<span class="field username">test</span>)
             </a>
           </li>
           <li class="user moderator" id="user_4">
             <a href="mailto:stinky@gmail.com" class="field email">
               <span class="field firstname">Stinky</span>
               <span class="field lastname">McSmellsalot</span>
+              (<span class="field username">stinky</span>)
             </a>
           </li>
           <li class="user" id="user_5">
             <a href="mailto:booby@boobs.com" class="field email">
               <span class="field firstname">Booby</span>
               <span class="field lastname">McBoob</span>
+              (<span class="field username">boobs</span>)
             </a>
           </li>
         </ul>

@@ -11,7 +11,7 @@
     <script type="text/javascript" src="../active_element.js"></script>
     <script type="text/javascript" src="specs.js"></script>
     <style type="text/css">
-      .posts, .users {
+      .posts, .users, .new_comment {
         visibility: hidden;
       }
     </style>
@@ -67,6 +67,21 @@
         <dd class="data email"><a class="real_email" href="mailto:hank@hanktastic.com">hank@hanktastic.com</a></dd>
       </dl>
     </div>
+
+
+    <form id="new_comment" class="new_comment">
+      <p>
+        <label for="comment_name">Name</label>
+        <input type="text" id="comment_name" name="comment[name]" value="The Internet Man" />
+      </p>
+      <p>
+        <label for="comment_body">Comment</label>
+        <textarea id="comment_name" name="comment[body]">You suck</textarea>
+      </p>
+      <p>
+        <input type="submit" value="Give me your precious feedback" />
+      </p>
+    </form>
 
   </body>
 </html>
