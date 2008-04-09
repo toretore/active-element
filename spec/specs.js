@@ -646,6 +646,15 @@ describe('Extensions to Prototype Element class', {
       value_of(o.element.readAttribute('class')).should_be('edit_comment');
       value_of(o.form.isNewRecord()).should_be_false();
     },
+    
+    'should change class name to "new_<getName>" on setID when given a falsy value': function(){
+      o.form.setID('123');
+      value_of(o.element.readAttribute('class')).should_be('edit_comment');
+      value_of(o.form.isNewRecord()).should_be_false();
+      o.form.setID(null);
+      value_of(o.element.readAttribute('class')).should_be('new_comment');
+      value_of(o.form.isNewRecord()).should_be_true();
+    },
 
     'should have a getElement method that returns the element with the id "<getName>_<name>"': function(){
       value_of(o.form.getElement('name')).should_be(o.element.down('#comment_name'));
@@ -660,8 +669,17 @@ describe('Extensions to Prototype Element class', {
       value_of(o.element.down('#comment_name').value).should_be('Utanapishtim, the Faraway');
     },
 
-    'should generate a resource index URL with generateURL when isNewRecord': function(){
-      
+    'should generate a resource index URL when isNewRecord': function(){
+      value_of(o.form.generateURLFromNothing()).should_be('/comments');
+    },
+
+    'should generate a URL to single resource when !isNewRecord': function(){
+      o.form.setID('123');
+      value_of(o.form.generateURLFromNothing()).should_be('/comments/123');
+    },
+
+    'should return the right attributeNames based on id "<getName>_<name>"': function(){
+      value_of(o.form.getAttributeNames()).should_be(['name', 'body']);
     }
   
   });

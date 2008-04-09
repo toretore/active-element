@@ -418,22 +418,42 @@ ActiveElement.Form = new JS.Class(ActiveElement.Base, {
 
   setID: function(id){
     this.element.setID(id, 'edit_'+this.getName());
-    if (this.isNewRecord()){
-      this.element.removeClassName('new_'+this.getName());
-      this.element.addClassName('edit_'+this.getName());
-    }
+    //If ID gets set, record is no longer new. If ID gets "unset", it's new again
+    this.element[id ? 'removeClassName' : 'addClassName']('new_'+this.getName());
+    this.element[id ? 'addClassName' : 'removeClassName']('edit_'+this.getName());
   },
 
   getFieldSelector: function(name){
     return '#'+this.getName()+'_'+name;
   },
+  
+  getAttributeNames: function(){
+    return this.element.getElements().inject([], function(arr,el){
+      var id = el.readAttribute('id');
+      var match = id && id.match(new RegExp(this.getName()+'_(.+)'));
+      if (match) { arr.push(match[1]); }
+      return arr;
+    }, this);
+  },
 
   extractValueFromElement: function(element){
-    return element.value;
+    return element.getValue();
   },
 
   insertValueInElement: function(element, value){
     element.value = value;
+  },
+
+  generateURLFromNothing: function(){
+    return this.isNewRecord() ? '/'+this.getPluralName() : this.callSuper();
+  },
+
+  generateURLFromRoutes: function(){
+    return this.isNewRecord() ? Routes[this.getPluralName()]() : Routes[this.getName()](this.getID());
+  },
+
+  reset: function(){
+    this.element.reset();
   }
 
 });
