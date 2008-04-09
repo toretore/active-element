@@ -181,3 +181,42 @@ h1 {
       .users li a .paren {
         display: none;
       }
+
+.new_comment, .edit_comment {
+  background: #444;
+  padding: 0.5em;
+  margin: 1em 0
+}
+
+  .new_comment p, .edit_comment p {
+    padding: 0.5em;
+    overflow: hidden;
+  }
+
+  .new_comment p label, .edit_comment p label {
+    float: left;
+    width: 25%;
+    font-size: 80%;
+  }
+
+  .new_comment p input, .edit_comment p input,
+  .new_comment p textarea, .edit_comment p textarea {
+    float: right;
+    width: 70%;
+    background: #555;
+    border: 1px solid #000;
+    color: #999;
+    padding: 0.25em;
+  }
+
+  .new_comment p textarea, .edit_comment p textarea {
+    height: 10em;
+  }
+
+  .new_comment p button, .edit_comment p button {
+    background: #333;
+    border: 1px solid #222;
+    padding: 0.5em;
+    color: #999;
+    float: right;
+  }

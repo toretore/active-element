@@ -8,6 +8,7 @@
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="posts.js"></script>
     <script type="text/javascript" src="users.js"></script>
+    <script type="text/javascript" src="comment_form.js"></script>
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
@@ -25,6 +26,7 @@
         <ul>
           <li>Posts: <a href="posts.js">posts.js</a> - Object <code>Demo.posts</code></li>
           <li>Users: <a href="users.js">users.js</a> - Object <code>Demo.users</code></li>
+          <li>Comment form: <a href="comment_form.js">comment_form.js</a> - Object <code>Demo.commentForm</code></li>
         </ul>
         <p>
           Open your Firebug to see log messages and mess around with things.
@@ -185,6 +187,25 @@ Demo.users.getMarked().invoke('setMarked', false);</pre>
             </a>
           </li>
         </ul>
+
+
+        <h2>Comment form</h2>
+
+        <pre>Demo.commentForm.loudify();</pre>
+
+        <form id="new_comment" class="new_comment" action="/comments" method="post">
+          <p>
+            <label for="comment_name">Name</label>
+            <input type="text" name="comment[name]" id="comment_name" value="Enkidu" />
+          </p>
+          <p>
+            <label for="comment_name">Comment</label>
+            <textarea name="comment[body]" id="comment_body">My friend, we have cut down the towering Cedar whose top scrapes the sky. Make from it a door 72 cubits high, 24 cubits wide, one cubit thick, its fixture, its lower and upper pivots will be out of one piece.</textarea>
+          </p>
+          <p>
+            <button type="submit">Submit</button>
+          </p>
+        </form>
 
       </div>
 
