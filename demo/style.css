@@ -26,8 +26,8 @@ h1 {
 }
 
 #description {
-  background: #cfc;
-  color: #030;
+  background: #ff7;
+  color: #330;
   padding: 1em;
   margin-bottom: 2em;
   font-size: 90%;
@@ -39,8 +39,12 @@ h1 {
   }
 
   #description code {
-    background: #9c9;
+    background: #ee5;
     padding: 0 0.5em;
+  }
+
+  #description a {
+    color: #369;
   }
 
 #first {
@@ -51,6 +55,13 @@ h1 {
 #second {
   width: 45%;
   float: right;
+}
+
+pre {
+  background: #222;
+  margin: 1em 0;
+  padding: 0.5em;
+  overflow: auto;
 }
 
 .items {
