@@ -67,10 +67,6 @@ Demo.Posts = ActiveElement.Collection.spawn('post', {
   afterInitialize: function(){
     console.log(this.size()+' posts were initialised');
   },
-  
-  getAttributeNameClass: function(){
-    return null;
-  },
 
   sabotage: function(){
     console.log(

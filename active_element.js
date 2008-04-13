@@ -460,6 +460,7 @@ ActiveElement.Form = new JS.Class(ActiveElement.Base, {
 
 
 
-document.observe('dom:loaded', function(){
+//IE seems to have problems with document.observe('dom:loaded')
+Event.observe(window, 'load', function(){
   ActiveElement.findAndAttachAllClasses();
 });
