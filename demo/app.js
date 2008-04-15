@@ -14,10 +14,10 @@ Event.observe(window, 'load', function(){
     Demo.console.flash();
   };
   Demo.console.log.element.observe('click', function(){ Demo.console.setInactive(!Demo.console.isInactive()); });
-  if (console && console.log) { Demo.console.element.hide(); }
+  if (window.console && console.log) { Demo.console.element.hide(); }
 
   Demo.log = function(msg){
-    if (console && console.log) { console.log(msg); }
+    if (window.console && console.log) { console.log(msg); }
     Demo.console.log.insert(msg);
   };
 
