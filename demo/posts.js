@@ -69,11 +69,9 @@ Demo.Posts = ActiveElement.Collection.spawn('post', {
   },
 
   sabotage: function(){
-    Demo.log(
-      this.map(function(post){
-        return [post.get('title'), post.get('summary').replace(/\s+/g, ' ').strip()];
-      }).flatten().join('\n')
-    );
+    return this.map(function(post){
+      return [post.get('title'), post.get('summary').replace(/\s+/g, ' ').strip()];
+    }).flatten().join('\n');
   }
 
 });
