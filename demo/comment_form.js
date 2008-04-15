@@ -19,7 +19,7 @@ Demo.CommentForm = ActiveElement.Form.spawn('comment', {
         "\n\nNot actually sending this, because there's no server on the other end"
       );
     }.bindAsEventListener(this));
-    console.log(
+    Demo.log(
       'Comment form initialised ('+
       this.getAttributeNames().map(function(a){ return '"'+a+'"'; }).join(', ')+')'
     );

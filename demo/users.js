@@ -1,7 +1,7 @@
 Demo.User = ActiveElement.Base.spawn('user', {
 
   afterInitialize: function(){
-    console.log('User '+this.getID()+' initialised: '+this.get('name'));
+    Demo.log('User '+this.getID()+' initialised: '+this.get('name'));
     this.getElement('email').observe('click', function(e){
       e.stop();
       this.setMarked(!this.isMarked());
@@ -43,7 +43,7 @@ Demo.User = ActiveElement.Base.spawn('user', {
   },
   setMarked: function(yes){
     this.element[yes ? 'addClassName' : 'removeClassName']('marked');
-    console.log(
+    Demo.log(
       'User "'+this.get('name')+'" is now '+
       (this.isMarked() ? 'marked' : 'unmarked')+
       ' ('+this.collection.getMarked().length+' marked users)'
@@ -61,7 +61,7 @@ Demo.Users = ActiveElement.Collection.spawn('user', {
   },
 
   afterInitialize: function(){
-    console.log(this.size()+' users initialised');
+    Demo.log(this.size()+' users initialised');
   },
 
   getMarked: function(){

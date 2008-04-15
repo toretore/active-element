@@ -1,11 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" debug="true">
   <head>
     <title>ActiveElement demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script type="text/javascript" src="../vendor/class.js"></script>
     <script type="text/javascript" src="../vendor/prototype.js"></script>
-    <script type="text/javascript" src="../active_element.js"></script>
     <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="../active_element.js"></script>
     <script type="text/javascript" src="posts.js"></script>
     <script type="text/javascript" src="users.js"></script>
     <script type="text/javascript" src="comment_form.js"></script>
@@ -29,7 +30,9 @@
           <li>Comment form: <a href="comment_form.js">comment_form.js</a> - Object <code>Demo.commentForm</code></li>
         </ul>
         <p>
-          Open your Firebug to see log messages and mess around with things.
+          Open your Firebug to see console messages and to mess around with things, it's what this demo is meant for and
+          it won't make much sense without it. If you're using IE, the style is probably messed up, but the JS should still work.
+          Although if you're a <em>developer</em> using IE voluntarily.. well, stop it.
         </p>
       </div>
   
@@ -140,10 +143,10 @@ Demo.posts.sabotage();</pre>
           Try:
         </p>
 
-        <pre>Demo.users.first().get('firstname'); // "Robert"
-Demo.users.first().get('name'); // "Robert Robertson"
-Demo.users.first().set('name', 'Bobby Bobson');
-Demo.users.first().get('lastname'); // "Bobson"
+        <pre>Demo.users.first().get('firstname'); // "Roberto"
+Demo.users.first().get('name'); // "Roberto Tablés"
+Demo.users.first().set('name', 'Bobby Tables');
+Demo.users.first().get('firstname'); // "Bobby"
 Demo.users.first().isAdmin(); // false
 Demo.users.first().setAdmin(true); // Notice the border colour
 //Click on some users, then
@@ -153,9 +156,9 @@ Demo.users.getMarked().invoke('setMarked', false);</pre>
         <ul class="users" id="users">
           <li class="user" id="user_1">
             <a href="mailto:robert@robertson.com" class="field email">
-              <span class="field firstname">Robert</span>
-              <span class="field lastname">Robertson</span>
-              (<span class="field username">robert</span>)
+              <span class="field firstname">Roberto</span>
+              <span class="field lastname">Tablés</span>
+              (<span class="field username">bobby</span>)
             </a>
           </li>
           <li class="user admin" id="user_2">
@@ -181,9 +184,9 @@ Demo.users.getMarked().invoke('setMarked', false);</pre>
           </li>
           <li class="user" id="user_5">
             <a href="mailto:booby@boobs.com" class="field email">
-              <span class="field firstname">Booby</span>
-              <span class="field lastname">McBoob</span>
-              (<span class="field username">boobs</span>)
+              <span class="field firstname">Busty</span>
+              <span class="field lastname">McChest</span>
+              (<span class="field username">busty</span>)
             </a>
           </li>
         </ul>
@@ -207,6 +210,10 @@ Demo.users.getMarked().invoke('setMarked', false);</pre>
           </p>
         </form>
 
+      </div>
+
+      <div id="console">
+        <div class="log"></div>
       </div>
 
     </div>

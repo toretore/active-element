@@ -2,7 +2,7 @@ Demo.Post = ActiveElement.Base.spawn('post', {
 
   afterInitialize: function(){
     this.hijackRating();
-    console.log('Post '+this.getID()+' was initialised');
+    Demo.log('Post '+this.getID()+' was initialised');
   },
 
   //This will be used when you do post.get('title')
@@ -30,14 +30,14 @@ Demo.Post = ActiveElement.Base.spawn('post', {
     //random number. Request is simulated with setTimeout
     this.element.addClassName('updating');
     this.element.down('.rating h4').update('Rating..');
-    console.log('Rating post "'+this.get('title')+'" (ID '+this.getID()+') with '+rating);
+    Demo.log('Rating post "'+this.get('title')+'" (ID '+this.getID()+') with '+rating);
     setTimeout(function(){
       this.element.down('.rating h4').update('Average rating');
       this.element.down('.rating ul').replace(
         '<p class="average">'+(Math.random()*5).toString().slice(0,3)+'</p>'
       );
       this.element.removeClassName('updating');
-      console.log('Post "'+this.get('title')+'" was rated.');
+      Demo.log('Post "'+this.get('title')+'" was rated.');
     }.bind(this), 2000);
   },
 
@@ -65,11 +65,11 @@ Demo.Posts = ActiveElement.Collection.spawn('post', {
   },
 
   afterInitialize: function(){
-    console.log(this.size()+' posts were initialised');
+    Demo.log(this.size()+' posts were initialised');
   },
 
   sabotage: function(){
-    console.log(
+    Demo.log(
       this.map(function(post){
         return [post.get('title'), post.get('summary').replace(/\s+/g, ' ').strip()];
       }).flatten().join('\n')

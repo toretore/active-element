@@ -19,6 +19,7 @@ body {
   max-width: 100%;
   margin: auto;
   overflow: hidden;
+  padding-bottom: 10em;
 }
 
 h1 {
@@ -57,12 +58,52 @@ h1 {
   float: right;
 }
 
+#console {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8em;
+  overflow: auto;
+  background: #555;
+  border-top: 0.2em solid #777;
+}
+
+  #console:hover {
+    border-color: #ccc;
+    cursor: pointer;
+  }
+
+  #console.inactive {
+    height: 1.5em;
+    opacity: 0.75;
+    overflow: hidden;
+  }
+
+  #console.updated {
+    border-color: #ff6;
+  }
+
+  #console .message {
+    display: block;
+    font-size: 80%;
+    padding: 0.2em;
+    border-bottom: 1px solid #666;
+    margin: 0;
+    background: #555;
+  }
+
 pre {
   background: #222;
   margin: 1em 0;
   padding: 0.5em;
   overflow: auto;
 }
+
+  pre .line:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 
 .items {
 }
