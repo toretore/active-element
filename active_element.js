@@ -387,6 +387,10 @@ ActiveElement.Collection = new JS.Class(ActiveElement, {
 
   _each: function(fn){
     return this.items.each(fn);
+  },
+
+  at: function(index){
+    return this.items[index];
   }
 
 });
@@ -461,6 +465,6 @@ ActiveElement.Form = new JS.Class(ActiveElement.Base, {
 
 
 //IE seems to have problems with document.observe('dom:loaded')
-Event.observe(window, 'load', function(){
+document.observe('dom:loaded', function(){
   ActiveElement.findAndAttachAllClasses();
 });
