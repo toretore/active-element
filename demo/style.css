@@ -9,7 +9,7 @@ html {
 body {
   font-family: Verdana, Arial, sans-serif;
   font-size: 90%;
-  background: #333;
+  background: #111;
   color: #eee;
   padding: 1em;
 }
@@ -48,15 +48,64 @@ h1 {
     color: #369;
   }
 
-#first {
-  width: 45%;
-  float: left;
+#tabs {
+  overflow: hidden;
 }
 
-#second {
-  width: 45%;
-  float: right;
+  #tabs .tab {
+    float: left;
+    width: 45%;
+    margin-right: 2%;
+  }
+
+#tabs.active { /* active == javascript is available */
+  width: 60%;
 }
+
+  #tabs.active .tablist {
+    list-style-type: none;
+    overflow: hidden;
+  }
+
+    #tabs.active .tablist li {
+      float: left;
+      margin-right: 0.2em;
+    }
+
+      #tabs.active .tablist li a {
+        display: block;
+        padding: 0.25em;
+        background: #222;
+        color: #999;
+        text-decoration: none;
+        outline: 0;
+      }
+
+        #tabs.active .tablist li a:hover, #tabs.active .tablist li a:focus {
+          text-decoration: underline;
+        }
+
+        #tabs.active .tablist li.active a {
+          display: block;
+          background-color: #333;
+          color: #ccc;
+        }
+
+  #tabs.active .tab {
+    display: none;
+    width: 95%;
+    background: #333;
+    margin: 0;
+    padding: 0.5em;
+  }
+
+    #tabs.active .tab.active {
+      display: block;
+    }
+
+    #tabs.active .tab h2 {
+      display: none;
+    }
 
 #console {
   position: fixed;

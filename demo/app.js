@@ -1,6 +1,7 @@
+window.loadFirebugConsole && loadFirebugConsole();
 Demo = {};
 
-Event.observe(window, 'load', function(){
+document.observe('dom:loaded', function(){
 
   Demo.console = new ActiveElement('console');
   Demo.console.getAttributeNameClass = function(){ return null; };

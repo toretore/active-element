@@ -7,6 +7,7 @@
     <script type="text/javascript" src="../vendor/prototype.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="../active_element.js"></script>
+    <script type="text/javascript" src="tabs.js"></script>
     <script type="text/javascript" src="posts.js"></script>
     <script type="text/javascript" src="users.js"></script>
     <script type="text/javascript" src="comment_form.js"></script>
@@ -28,122 +29,131 @@
           <li>Posts: <a href="posts.js">posts.js</a> - Object <code>Demo.posts</code></li>
           <li>Users: <a href="users.js">users.js</a> - Object <code>Demo.users</code></li>
           <li>Comment form: <a href="comment_form.js">comment_form.js</a> - Object <code>Demo.commentForm</code></li>
+          <li>Tabs: <a href="tabs.js">tabs.js</a> - Object <code>Demo.tabs</code></li>
         </ul>
         <p>
           Open your Firebug to see console messages and to mess around with things, it's what this demo is meant for and
-          it won't make much sense without it. If you're using IE, the style is probably messed up, but the JS should still work.
-          Although if you're a <em>developer</em> using IE voluntarily.. well, stop it.
+          it won't make much sense without it. Things might not work very well with IE, because I'm using
+          <code>dom:loaded</code> and because I haven't bothered to check the CSS.
         </p>
       </div>
+
+      <pre>Demo.tabs.deactivate();
+Demo.tabs.activate();
+Demo.tabs.last().activate();
+Demo.tabs.getActive().get('title');</pre>
+
+      <div id="tabs">
   
-      <div id="first">
-      
-        <div class="items posts" id="posts">
-          
-          <h2 class="title">Posts</h2>
+        <div id="first" class="tab">
+            
+          <h2 class="field title">Posts</h2>
+        
+          <div class="items posts" id="posts">
 
-          <p>
-            Try this in your Firebug console:
-          </p>
+            <p>
+              Try this in your Firebug console:
+            </p>
 
-          <pre>Demo.posts.first().get('title');
+            <pre>Demo.posts.first().get('title');
+Demo.posts.first().set('title', Demo.posts.first().get('title').toUpperCase());
 Demo.posts.first().set('link', 'http://www.google.com');
 Demo.posts.first().rate(3.4);
 Demo.posts.sabotage();</pre>
 
-          <div class="item post" id="post_1">
-            <h3 class="field title"><a href="/posts/1">I can't stand it</a></h3>
-            <p class="field summary">
-              I know you planned it
-            </p>
-            <div class="rating">
-              <h4>Rate this post</h4>
-              <ul>
-                <li><a href="/posts/1/rate/1">1</a></li>
-                <li><a href="/posts/1/rate/2">2</a></li>
-                <li><a href="/posts/1/rate/3">3</a></li>
-                <li><a href="/posts/1/rate/4">4</a></li>
-                <li><a href="/posts/1/rate/5">5</a></li>
-              </ul>
+            <div class="item post" id="post_1">
+              <h3 class="field title"><a href="/posts/1">I can't stand it</a></h3>
+              <p class="field summary">
+                I know you planned it
+              </p>
+              <div class="rating">
+                <h4>Rate this post</h4>
+                <ul>
+                  <li><a href="/posts/1/rate/1">1</a></li>
+                  <li><a href="/posts/1/rate/2">2</a></li>
+                  <li><a href="/posts/1/rate/3">3</a></li>
+                  <li><a href="/posts/1/rate/4">4</a></li>
+                  <li><a href="/posts/1/rate/5">5</a></li>
+                </ul>
+              </div>
             </div>
-          </div>
 
-          <div class="item post" id="post_2">
-            <h3 class="field title"><a href="/posts/2">I'm gonna set it straight</a></h3>
-            <p class="field summary">
-              This Watergate
-            </p>
-            <div class="rating">
-              <h4>Rate this post</h4>
-              <ul>
-                <li><a href="/posts/2/rate/1">1</a></li>
-                <li><a href="/posts/2/rate/2">2</a></li>
-                <li><a href="/posts/2/rate/3">3</a></li>
-                <li><a href="/posts/2/rate/4">4</a></li>
-                <li><a href="/posts/2/rate/5">5</a></li>
-              </ul>
+            <div class="item post" id="post_2">
+              <h3 class="field title"><a href="/posts/2">I'm gonna set it straight</a></h3>
+              <p class="field summary">
+                This Watergate
+              </p>
+              <div class="rating">
+                <h4>Rate this post</h4>
+                <ul>
+                  <li><a href="/posts/2/rate/1">1</a></li>
+                  <li><a href="/posts/2/rate/2">2</a></li>
+                  <li><a href="/posts/2/rate/3">3</a></li>
+                  <li><a href="/posts/2/rate/4">4</a></li>
+                  <li><a href="/posts/2/rate/5">5</a></li>
+                </ul>
+              </div>
             </div>
-          </div>
 
-          <div class="item post" id="post_3">
-            <h3 class="field title"><a href="/posts/3">I can't stand rockin when I'm in here</a></h3>
-            <p class="field summary">
-              Because your crystal ball ain't so crystal clear
-            </p>
-            <div class="rating">
-              <!-- This post has already been rated by the user -->
-              <h4>Average rating</h4>
-              <p class="average">4.6</p>
+            <div class="item post" id="post_3">
+              <h3 class="field title"><a href="/posts/3">I can't stand rockin when I'm in here</a></h3>
+              <p class="field summary">
+                Because your crystal ball ain't so crystal clear
+              </p>
+              <div class="rating">
+                <!-- This post has already been rated by the user -->
+                <h4>Average rating</h4>
+                <p class="average">4.6</p>
+              </div>
             </div>
-          </div>
 
-          <div class="item post" id="post_4">
-            <h3 class="field title"><a href="/posts/4">So while you sit back and wonder why</a></h3>
-            <p class="field summary">
-              I've got this fuckin thorn in my side
-            </p>
-            <div class="rating">
-              <h4>Rate this post</h4>
-              <ul>
-                <li><a href="/posts/4/rate/1">1</a></li>
-                <li><a href="/posts/4/rate/2">2</a></li>
-                <li><a href="/posts/4/rate/3">3</a></li>
-                <li><a href="/posts/4/rate/4">4</a></li>
-                <li><a href="/posts/4/rate/5">5</a></li>
-              </ul>
+            <div class="item post" id="post_4">
+              <h3 class="field title"><a href="/posts/4">So while you sit back and wonder why</a></h3>
+              <p class="field summary">
+                I've got this fuckin thorn in my side
+              </p>
+              <div class="rating">
+                <h4>Rate this post</h4>
+                <ul>
+                  <li><a href="/posts/4/rate/1">1</a></li>
+                  <li><a href="/posts/4/rate/2">2</a></li>
+                  <li><a href="/posts/4/rate/3">3</a></li>
+                  <li><a href="/posts/4/rate/4">4</a></li>
+                  <li><a href="/posts/4/rate/5">5</a></li>
+                </ul>
+              </div>
             </div>
-          </div>
 
-          <div class="item post" id="post_5">
-            <h3 class="field title"><a href="/posts/5">Oh my God, it's a mirage</a></h3>
-            <p class="field summary">
-              I'm telling y'all it's <em>sabotage</em>!!
-            </p>
-            <div class="rating">
-              <h4>Rate this post</h4>
-              <ul>
-                <li><a href="/posts/5/rate/1">1</a></li>
-                <li><a href="/posts/5/rate/2">2</a></li>
-                <li><a href="/posts/5/rate/3">3</a></li>
-                <li><a href="/posts/5/rate/4">4</a></li>
-                <li><a href="/posts/5/rate/5">5</a></li>
-              </ul>
+            <div class="item post" id="post_5">
+              <h3 class="field title"><a href="/posts/5">Oh my God, it's a mirage</a></h3>
+              <p class="field summary">
+                I'm telling y'all it's <em>sabotage</em>!!
+              </p>
+              <div class="rating">
+                <h4>Rate this post</h4>
+                <ul>
+                  <li><a href="/posts/5/rate/1">1</a></li>
+                  <li><a href="/posts/5/rate/2">2</a></li>
+                  <li><a href="/posts/5/rate/3">3</a></li>
+                  <li><a href="/posts/5/rate/4">4</a></li>
+                  <li><a href="/posts/5/rate/5">5</a></li>
+                </ul>
+              </div>
             </div>
+
           </div>
 
         </div>
 
-      </div>
+        <div id="second" class="tab">
 
-      <div id="second">
+          <h2 class="field title">Users</h2>
 
-        <h2>Users</h2>
+          <p>
+            Try:
+          </p>
 
-        <p>
-          Try:
-        </p>
-
-        <pre>Demo.users.first().get('firstname'); // "Roberto"
+          <pre>Demo.users.first().get('firstname'); // "Roberto"
 Demo.users.first().get('name'); // "Roberto Tablés"
 Demo.users.first().set('name', 'Bobby Tables');
 Demo.users.first().get('firstname'); // "Bobby"
@@ -153,63 +163,69 @@ Demo.users.first().setAdmin(true); // Notice the border colour
 Demo.users.getMarked().invoke('get', 'name');
 Demo.users.getMarked().invoke('setMarked', false);</pre>
 
-        <ul class="users" id="users">
-          <li class="user" id="user_1">
-            <a href="mailto:robert@robertson.com" class="field email">
-              <span class="field firstname">Roberto</span>
-              <span class="field lastname">Tablés</span>
-              (<span class="field username">bobby</span>)
-            </a>
-          </li>
-          <li class="user admin" id="user_2">
-            <a href="mailto:smoky@hotmail.com" class="field email">
-              <span class="field firstname">Smoky</span>
-              <span class="field lastname">McPot</span>
-              (<span class="field username">smokie</span>)
-            </a>
-          </li>
-          <li class="user" id="user_3">
-            <a href="mailto:test@test.com" class="field email">
-              <span class="field firstname">Testy</span>
-              <span class="field lastname">McTest</span>
-              (<span class="field username">test</span>)
-            </a>
-          </li>
-          <li class="user moderator" id="user_4">
-            <a href="mailto:stinky@gmail.com" class="field email">
-              <span class="field firstname">Stinky</span>
-              <span class="field lastname">McSmellsalot</span>
-              (<span class="field username">stinky</span>)
-            </a>
-          </li>
-          <li class="user" id="user_5">
-            <a href="mailto:booby@boobs.com" class="field email">
-              <span class="field firstname">Busty</span>
-              <span class="field lastname">McChest</span>
-              (<span class="field username">busty</span>)
-            </a>
-          </li>
-        </ul>
+          <ul class="users" id="users">
+            <li class="user" id="user_1">
+              <a href="mailto:robert@robertson.com" class="field email">
+                <span class="field firstname">Roberto</span>
+                <span class="field lastname">Tablés</span>
+                (<span class="field username">bobby</span>)
+              </a>
+            </li>
+            <li class="user admin" id="user_2">
+              <a href="mailto:smoky@hotmail.com" class="field email">
+                <span class="field firstname">Smoky</span>
+                <span class="field lastname">McPot</span>
+                (<span class="field username">smokie</span>)
+              </a>
+            </li>
+            <li class="user" id="user_3">
+              <a href="mailto:test@test.com" class="field email">
+                <span class="field firstname">Testy</span>
+                <span class="field lastname">McTest</span>
+                (<span class="field username">test</span>)
+              </a>
+            </li>
+            <li class="user moderator" id="user_4">
+              <a href="mailto:stinky@gmail.com" class="field email">
+                <span class="field firstname">Stinky</span>
+                <span class="field lastname">McSmellsalot</span>
+                (<span class="field username">stinky</span>)
+              </a>
+            </li>
+            <li class="user" id="user_5">
+              <a href="mailto:booby@boobs.com" class="field email">
+                <span class="field firstname">Busty</span>
+                <span class="field lastname">McChest</span>
+                (<span class="field username">busty</span>)
+              </a>
+            </li>
+          </ul>
+
+        </div>
+
+        <div id="third" class="tab">
 
 
-        <h2>Comment form</h2>
+          <h2 class="field title">Comment form</h2>
 
-        <pre>Demo.commentForm.loudify();
+          <pre>Demo.commentForm.loudify();
 Demo.commentForm.reset();</pre>
 
-        <form id="new_comment" class="new_comment" action="/comments" method="post">
-          <p>
-            <label for="comment_name">Name</label>
-            <input type="text" name="comment[name]" id="comment_name" value="Enkidu" />
-          </p>
-          <p>
-            <label for="comment_name">Comment</label>
-            <textarea name="comment[body]" id="comment_body">My friend, we have cut down the towering Cedar whose top scrapes the sky. Make from it a door 72 cubits high, 24 cubits wide, one cubit thick, its fixture, its lower and upper pivots will be out of one piece.</textarea>
-          </p>
-          <p>
-            <button type="submit">Submit</button>
-          </p>
-        </form>
+          <form id="new_comment" class="new_comment" action="/comments" method="post">
+            <p>
+              <label for="comment_name">Name</label>
+              <input type="text" name="comment[name]" id="comment_name" value="Enkidu" />
+            </p>
+            <p>
+              <label for="comment_body">Comment</label>
+              <textarea name="comment[body]" id="comment_body">My friend, we have cut down the towering Cedar whose top scrapes the sky. Make from it a door 72 cubits high, 24 cubits wide, one cubit thick, its fixture, its lower and upper pivots will be out of one piece.</textarea>
+            </p>
+            <p>
+              <button type="submit">Submit</button>
+            </p>
+          </form>
+
+        </div>
 
       </div>
 
