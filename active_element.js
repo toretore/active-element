@@ -224,6 +224,37 @@ ActiveElement = new JS.Class({
 Element.addMethods(ActiveElement.ElementExtensions);
 
 
+//Very simple messaging system
+ActiveElement.messages = {
+
+  subscriptions: {},
+
+  subscribe: function(message, callback, scope){
+    if (!this.subscriptions[message]) { this.subscriptions[message] = []; }
+    this.subscriptions[message].push({callback: callback, scope: scope});
+  },
+  
+  unsubscribe: function(message, callback){
+    var s = this.subscriptions;
+    if (s[message]) {
+      s[message].each(function(o, i){
+        if (o.callback == callback) { s[message].splice(i,1); }
+      });
+    }
+  },
+
+  fire: function(message){
+    if (this.subscriptions[message]) {
+      var args = $A(arguments).slice(1);
+      this.subscriptions[message].each(function(o){
+        o.callback.apply(o.scope || window, args)
+      });
+    }
+  }
+
+};
+
+
 
 
 /****
