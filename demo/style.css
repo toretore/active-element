@@ -91,6 +91,10 @@ h1 {
           color: #ccc;
         }
 
+        #tabs.active .tablist li.updated a {
+          background-color: #cc3;
+        }
+
   #tabs.active .tab {
     display: none;
     width: 95%;
