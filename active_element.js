@@ -174,7 +174,15 @@ ActiveElement = new JS.Class({
 
   //Returns the value of the field with the name +name+
   get: function(name){
-    return this.getValueFromFunction(name) || this.getValueFromElement(name);
+    try {
+      return this.getValueFromFunction(name)
+    } catch (e) {
+      if (e == 'nofunction') {
+        return this.getValueFromElement(name);
+      } else {
+        throw(e);
+      }
+    }
   },
   
   //Returns the value of +getName+ where Name is the name of
@@ -183,7 +191,13 @@ ActiveElement = new JS.Class({
   //Example: get('title') will try to call getTitle
   getValueFromFunction: function(name){
     var fnName = 'get'+ActiveElement.camelize(name)+'Value';
-    return Object.isFunction(this[fnName]) && this[fnName](name);
+    if (Object.isFunction(this[fnName])){
+      return this[fnName](name);
+    } else {
+      //We don't want to use true/false for this because the method could
+      //be designed to return a boolean
+      throw('nofunction');
+    }
   },
   
   //Returns the value of an element, looking up the element with
