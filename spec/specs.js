@@ -65,6 +65,48 @@ describe('Extensions to Prototype Element class', {
     el.setID(3, 'giraffe');
     value_of(el.readAttribute('id')).should_be('giraffe_3');
     el.writeAttribute('id', prevID);
+  },
+
+  'Element#getLabel should return <something> from a classname which matches <label>:<something>': function(){
+    var el = $('posts');
+    value_of(el.getLabel('foo')).should_be('bar');
+  },
+
+  'Element#getLabel should take an optional second parameter which is the separator between label and value': function(){
+    var el = $('posts');
+    value_of(el.getLabel('baz', '-')).should_be('quux');
+  },
+
+  'Element#getLabel should return null when no match can be found': function(){
+    var el = $('posts');
+    value_of(el.getLabel('humbaba')).should_be_null();
+  },
+
+  'Element#setLabel should replace the part after the "<label>:" with the provided value': function(){
+    var el = $('posts');
+    var prevClassName = el.readAttribute('class');
+    el.setLabel('foo', 'horse');
+    value_of(el.getLabel('foo')).should_be('horse');
+    value_of(el.readAttribute('class') == prevClassName).should_be_false();
+    el.writeAttribute('class', prevClassName);
+  },
+
+  'Element#setLabel should take a third argument denoting the separator': function(){
+    var el = $('posts');
+    var prevClassName = el.readAttribute('class');
+    el.setLabel('baz', 'horse', '-');
+    value_of(el.getLabel('baz', '-')).should_be('horse');
+    value_of(el.readAttribute('class') == prevClassName).should_be_false();
+    el.writeAttribute('class', prevClassName);
+  },
+
+  'Element#setLabel should set the label if it doesn\'t already exist': function(){
+    var el = $('posts');
+    var prevClassName = el.readAttribute('class');
+    el.setLabel('ezel', 'horse');
+    value_of(el.getLabel('ezel')).should_be('horse');
+    value_of(el.readAttribute('class') == prevClassName).should_be_false();
+    el.writeAttribute('class', prevClassName);
   }
 
 });

@@ -29,6 +29,21 @@ ActiveElement = new JS.Class({
       },
       setID: function(el, id, label){
         el.writeAttribute('id', label ? label+'_'+id : id);
+      },
+      getLabel: function(el, label, separator){
+        separator = separator || ':';
+        var m = el.readAttribute('class').match(new RegExp(label+separator+'([^ ]+)'));
+        return m ? m[1] : null;
+      },
+      setLabel: function(el, label, value, separator){
+        separator = separator || ':';
+        var className = el.readAttribute('class');
+        var re = new RegExp('('+label+separator+')([^ ]*)( |$)');
+        if (className.match(re)) {//Exists already
+          el.writeAttribute('class', className.replace(re, label+separator+value+'$3'));
+        } else {
+          el.addClassName(label+separator+value);
+        }
       }
     },
 
