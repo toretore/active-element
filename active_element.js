@@ -1,5 +1,4 @@
 
-
 ActiveElement = new JS.Class({
 
   extend: {
@@ -246,6 +245,28 @@ ActiveElement = new JS.Class({
 
   remove: function(){
     this.element.remove();
+  },
+
+
+  /*****
+   * FSM
+   ************/
+
+  states: {},
+
+  changeState: function(state){
+    var next = this.states[state];
+    if (next) {
+      var current = this.states[this.state];
+      current && current.onExit && current.onExit.call(this, state);
+      next.onEnter && next.onEnter.call(this, this.state);
+      this.state = state;
+    }
+  },
+
+  action: function(name){
+    var state = this.states[this.state];
+    state && state[name] && state[name].call(this);
   }
 
 });
@@ -254,34 +275,38 @@ Element.addMethods(ActiveElement.ElementExtensions);
 
 
 //Very simple messaging system
-ActiveElement.messages = {
+ActiveElement.extend({
 
-  subscriptions: {},
+  messages: {
 
-  subscribe: function(message, callback, scope){
-    if (!this.subscriptions[message]) { this.subscriptions[message] = []; }
-    this.subscriptions[message].push({callback: callback, scope: scope});
-  },
-  
-  unsubscribe: function(message, callback){
-    var s = this.subscriptions;
-    if (s[message]) {
-      s[message].each(function(o, i){
-        if (o.callback == callback) { s[message].splice(i,1); }
-      });
+    subscriptions: {},
+
+    subscribe: function(message, callback, scope){
+      if (!this.subscriptions[message]) { this.subscriptions[message] = []; }
+      this.subscriptions[message].push({callback: callback, scope: scope});
+    },
+    
+    unsubscribe: function(message, callback){
+      var s = this.subscriptions;
+      if (s[message]) {
+        s[message].each(function(o, i){
+          if (o.callback == callback) { s[message].splice(i,1); }
+        });
+      }
+    },
+
+    fire: function(message){
+      if (this.subscriptions[message]) {
+        var args = $A(arguments).slice(1);
+        this.subscriptions[message].each(function(o){
+          o.callback.apply(o.scope || window, args)
+        });
+      }
     }
-  },
 
-  fire: function(message){
-    if (this.subscriptions[message]) {
-      var args = $A(arguments).slice(1);
-      this.subscriptions[message].each(function(o){
-        o.callback.apply(o.scope || window, args)
-      });
-    }
   }
 
-};
+});
 
 
 
@@ -351,7 +376,7 @@ ActiveElement.Base = new JS.Class(ActiveElement, {
     var params = arguments[0] || {};
     var options = arguments[1] || {};
     if (typeof params.id === 'undefined') { params.id = this.toParam(); }
-    return Routes[this.name()].call(Routes, params, options);
+    return Routes[this.getName()].call(Routes, params, options);
   },
 
   //Will create a RESTful URL based on the plural name of this
@@ -376,6 +401,17 @@ ActiveElement.Base = new JS.Class(ActiveElement, {
     }, options);
 
     return new Ajax.Request(url, options);
+  },
+
+  removeFromCollection: function(){
+    if (this.collection){
+      this.collection.removeItem(this);
+    }
+  },
+
+  remove: function(){
+    this.removeFromCollection();
+    this.callSuper();
   }
 
 });
@@ -451,6 +487,10 @@ ActiveElement.Collection = new JS.Class(ActiveElement, {
 
   at: function(index){
     return this.items[index];
+  },
+
+  removeItem: function(item){
+    this.items.splice(this.items.indexOf(item), 1);
   }
 
 });
