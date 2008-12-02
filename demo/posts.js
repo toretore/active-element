@@ -1,43 +1,6 @@
 Demo.Post = ActiveElement.Base.spawn('post', {
 
-  states: {
-    initial: 'idle',
-    idle: {
-      onEnter: function(){ console.log('Entering idle state'); },
-      onExit: function(){ console.log('Exiting idle state'); },
-      disable: function(){
-        this.changeState('disabled');
-      },
-      rate: function(){
-        this.changeState('disabled');
-        this.action('rate');
-      }
-    },
-    disabled: {
-      onEnter: function(prev){ if (prev != 'rating') this.element.addClassName('updating'); },
-      onExit: function(next){ if (next != 'rating') this.element.removeClassName('updating'); },
-      rate: function(){
-        this.changeState('rating');
-      },
-      enable: function(){
-        this.changeState('idle');
-      }
-    },
-    rating: {
-      onEnter: function(rating){
-        this.rate(rating, function(){
-          this.action('enable');
-        }.bind(this));
-      },
-      enable: function(){
-        this.changeState('disabled');
-        this.action('enable');
-      }
-    }
-  },
-
   afterInitialize: function(){
-    this.changeState(this.states.initial);
     this.hijackRating();
     Demo.log('Post '+this.getID()+' was initialised');
   },

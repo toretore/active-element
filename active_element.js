@@ -245,28 +245,6 @@ ActiveElement = new JS.Class({
 
   remove: function(){
     this.element.remove();
-  },
-
-
-  /*****
-   * FSM
-   ************/
-
-  states: {},
-
-  changeState: function(state){
-    var next = this.states[state];
-    if (next) {
-      var current = this.states[this.state];
-      current && current.onExit && current.onExit.call(this, state);
-      next.onEnter && next.onEnter.call(this, this.state);
-      this.state = state;
-    }
-  },
-
-  action: function(name){
-    var state = this.states[this.state];
-    state && state[name] && state[name].call(this);
   }
 
 });
