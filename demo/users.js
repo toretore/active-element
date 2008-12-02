@@ -43,12 +43,11 @@ Demo.User = ActiveElement.Base.spawn('user', {
   },
   setMarked: function(yes){
     this.element[yes ? 'addClassName' : 'removeClassName']('marked');
-    this.klass.messages.fire('user marked or unmarked', this);
-    /*Demo.log(
+    Demo.log(
       'User "'+this.get('name')+'" is now '+
       (this.isMarked() ? 'marked' : 'unmarked')+
       ' ('+this.collection.getMarked().length+' marked users)'
-    );*/
+    );
   }
 
 });
@@ -63,11 +62,6 @@ Demo.Users = ActiveElement.Collection.spawn('user', {
 
   afterInitialize: function(){
     Demo.log(this.size()+' users initialised');
-    this.klass.messages.subscribe('user marked or unmarked', function(user){
-      Demo.log('User "'+user.get('name')+'" is now '+
-      (user.isMarked() ? 'marked' : 'unmarked')+
-      ' ('+this.getMarked().length+' marked users)');
-    }, this);
   },
 
   getMarked: function(){
