@@ -59,9 +59,9 @@ ActiveElement = new JS.Class({
     getPluralName: function(){ return ActiveElement.pluralize(this.getName()); },
     getIdentifier: function(){ return this.getName(); },
 
-    findAndAttachAllClasses: function(){
-      this.Collection.getDescendants().each(function(k){ k.findAndAttach(); });
-      this.Base.getDescendants().each(function(k){ k.findAndAttach(); });
+    locateAndAttachAllClasses: function(){
+      this.Collection.getDescendants().each(function(k){ k.locateAndAttach(); });
+      this.Base.getDescendants().each(function(k){ k.locateAndAttach(); });
     },
 
     getDescendants: function(){
@@ -83,9 +83,9 @@ ActiveElement = new JS.Class({
       return new JS.Class(this, props);
     },
 
-    findAndAttach: function(){
-      if (Object.isFunction(this.findInDocument)) {
-        this.attach(this.findInDocument());
+    locateAndAttach: function(){
+      if (Object.isFunction(this.locate)) {
+        this.attach(this.locate());
       }
     }
 
@@ -389,7 +389,7 @@ ActiveElement.Collection = new JS.Class(ActiveElement, {
       ActiveElement[this.getPluralName()] = something;
     },
     
-    findInDocument: function(){
+    locate: function(){
       var el = $(this.getPluralName());
       return el ? new this(el) : null;
     }
@@ -399,17 +399,17 @@ ActiveElement.Collection = new JS.Class(ActiveElement, {
 
   initialize: function(){
     this.callSuper();
-    this.items = this.findItems();
+    this.items = this.locateItems();
     Object.isFunction(this.afterInitialize) && this.afterInitialize();
   },
 
-  findElements: function(){
+  locateElements: function(){
     return this.element.select('.'+this.getName());
   },
 
-  findItems: function(){
+  locateItems: function(){
     var baseClass = this.klass.fetchBaseClass();
-    return this.findElements().map(function(e){
+    return this.locateElements().map(function(e){
       var item = new baseClass(e);
       item.collection = this;
       return item;
@@ -513,5 +513,5 @@ ActiveElement.Form = new JS.Class(ActiveElement.Base, {
 
 //IE seems to have problems with document.observe('dom:loaded')
 document.observe('dom:loaded', function(){
-  ActiveElement.findAndAttachAllClasses();
+  ActiveElement.locateAndAttachAllClasses();
 });

@@ -450,17 +450,17 @@ describe('Extensions to Prototype Element class', {
     },
 
     'ActiveElement.user should be defined automagically': function(){
-      o.User.findInDocument = function(){ return new this($('user_1')); };
-      o.User.findAndAttach();//fake domload event
+      o.User.locate = function(){ return new this($('user_1')); };
+      o.User.locateAndAttach();//fake domload event
       value_of(!!ActiveElement.user).should_be_true();
       value_of(ActiveElement.user.klass).should_be(o.User);
     },
 
-    'User.findAndAttach should call attach by default': function(){
+    'User.locateAndAttach should call attach by default': function(){
       var user;
-      o.User.findInDocument = function(){ return new this($('user_1')); };
+      o.User.locate = function(){ return new this($('user_1')); };
       o.User.attach = function(u){ user = u; };
-      o.User.findAndAttach();
+      o.User.locateAndAttach();
       value_of(user.klass).should_be(o.User);
     }
 
@@ -583,19 +583,19 @@ describe('Extensions to Prototype Element class', {
       o.posts.getName = function(){ return 'post'; };
     },
     
-    'findElements should return an array of DOM elements matching the selector "."+getName()': function(){
-      value_of(o.posts.findElements().first()).should_be(o.posts.element.select('.post').first());
+    'locateElements should return an array of DOM elements matching the selector "."+getName()': function(){
+      value_of(o.posts.locateElements().first()).should_be(o.posts.element.select('.post').first());
     },
     
-    'findItems should return an array of Base objects wrapping DOM elements returned by findElements': function(){
-      value_of(o.posts.findItems().first().isA(ActiveElement.Base)).should_be_true();
+    'locateItems should return an array of Base objects wrapping DOM elements returned by locateElements': function(){
+      value_of(o.posts.locateItems().first().isA(ActiveElement.Base)).should_be_true();
     },
 
     'items should be an array': function(){
       value_of(Object.isArray(o.posts.items)).should_be_true();
     },
 
-    'items should be automatically populated using findItems': function(){
+    'items should be automatically populated using locateItems': function(){
       value_of(o.posts.items.first().isA(ActiveElement.Base.fetch('post'))).should_be_true();
       value_of(o.posts.items.first().element).should_be(o.posts.element.select('.post').first());
     },
@@ -633,11 +633,11 @@ describe('Extensions to Prototype Element class', {
       value_of(ActiveElement[o.Users.getPluralName()]).should_be('foo');
     },
 
-    'Users.findAndAttach should run attach with the results from findInDocument': function(){
+    'Users.locateAndAttach should run attach with the results from locate': function(){
       var users;
-      o.Users.findInDocument = function(){ return 'never gonna run around and desert you'; };
+      o.Users.locate = function(){ return 'never gonna run around and desert you'; };
       o.Users.attach = function(u){ users = u; };
-      o.Users.findAndAttach();
+      o.Users.locateAndAttach();
       value_of(users).should_be('never gonna run around and desert you');
     }
   
