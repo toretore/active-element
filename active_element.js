@@ -30,9 +30,17 @@ ActiveElement = new JS.Class({
         el.writeAttribute('id', label ? label+'_'+id : id);
       },
       getLabel: function(el, label, separator){
+        var m = el.getLabels(label, separator);
+        return m && m[0] ? m[0] : null;
+      },
+      getLabels: function(el, label, separator){
         separator = separator || ':';
-        var m = el.readAttribute('class').match(new RegExp(label+separator+'([^ ]+)'));
-        return m ? m[1] : null;
+        var className = el.readAttribute('class');
+        var m = className && className.match(new RegExp(label+separator+'([^ ]+)', 'g'));
+        var re = new RegExp(label+separator+'([^ ]+)');
+        return (m || []).map(function(s){
+          return s.match(re)[1];
+        });
       },
       setLabel: function(el, label, value, separator){
         separator = separator || ':';
@@ -214,8 +222,11 @@ ActiveElement = new JS.Class({
 
   //Sets the value of the field with the name +name+
   set: function(name, value){
-    this.setValueWithFunction(name, value) || this.setValueWithSelector(name, value);
-    return this.get(name);
+    if(this.setValueWithFunction(name, value) || this.setValueWithSelector(name, value)) {
+      return this.get(name);
+    } else {
+      return false;
+    }
   },
 
   //Uses +setName+ to set the value of the field with the name +name+
@@ -234,13 +245,16 @@ ActiveElement = new JS.Class({
   //Gets the element identified by +name+ using getElement(name)
   //and sets its value with insertValueInElement
   setValueWithSelector: function(name, value){
-    this.insertValueInElement(this.getElement(name), value);
+    var element = this.getElement(name);
+    if (!element){ return false; }
+    return this.insertValueInElement(element, value);
   },
 
   //Sets the value of an element. Default implementation is to use
   //element.update(value), but could be change to e.g. element.value = value
   insertValueInElement: function(element, value){
     element.update(value);
+    return true;
   },
 
   remove: function(){
@@ -336,7 +350,9 @@ ActiveElement.Base = new JS.Class(ActiveElement, {
 
   removeFromCollection: function(){
     if (this.collection){
-      this.collection.removeItem(this);
+      return this.collection.removeItem(this);
+    } else {
+      return false;
     }
   },
 
@@ -421,7 +437,7 @@ ActiveElement.Collection = new JS.Class(ActiveElement, {
   },
 
   removeItem: function(item){
-    this.items.splice(this.items.indexOf(item), 1);
+    return !!this.items.splice(this.items.indexOf(item), 1);
   }
 
 });

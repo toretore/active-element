@@ -67,7 +67,17 @@ describe('Extensions to Prototype Element class', {
     el.writeAttribute('id', prevID);
   },
 
-  'Element#getLabel should return <something> from a classname which matches <label>:<something>': function(){
+  'Element#getLabels should return an array of strings <bar> from class names matching <foo>:<bar>': function(){
+    var el = $('posts');
+    value_of(el.getLabels('foo')).should_be(['bar', 'baz']);
+  },
+
+  'Element#getLabels should return an empty array when nothing is found': function(){
+    var el = $('posts');
+    value_of(el.getLabels('foojamba')).should_be([]);
+  },
+
+  'Element#getLabel should return <something> from the first classname which matches <label>:<something>': function(){
     var el = $('posts');
     value_of(el.getLabel('foo')).should_be('bar');
   },
