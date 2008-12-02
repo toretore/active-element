@@ -334,24 +334,6 @@ ActiveElement.Base = new JS.Class(ActiveElement, {
     return '/'+this.getPluralName()+'/'+this.toParam();
   },
 
-  update: function(){
-    var url, options;
-    if (Object.isString(arguments[0])) {
-      url = arguments[0];
-      options = arguments[1] || {};
-    } else {
-      url = this.generateURL();
-      options = arguments[0] || {};
-    }
-
-    options = Object.extend({
-      method: 'put',
-      parameters: this.getScopedAttributes()
-    }, options);
-
-    return new Ajax.Request(url, options);
-  },
-
   removeFromCollection: function(){
     if (this.collection){
       this.collection.removeItem(this);
